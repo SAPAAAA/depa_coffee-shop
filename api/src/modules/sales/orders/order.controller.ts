@@ -1,0 +1,105 @@
+import type { Request, Response } from "express";
+import type { OrderService } from "./order.service";
+import {
+  OrderStatusSchema,
+  type DeliveryMethod,
+  type IceLevel,
+  type OrderStatus,
+  type SugarLevel,
+} from "./order.model";
+import {
+  BadRequestError,
+  UnauthorizedError,
+} from "@/modules/shared/utils/errors";
+import orderService from "./order.service";
+
+export interface OrderRequestPayload {
+  customerId: string;
+  deliveryMethod: DeliveryMethod;
+  deliveryAddress?: string;
+  items: Array<{
+    orderVariantId: string;
+    quantity?: number;
+    iceLevel?: IceLevel;
+    sugarLevel?: SugarLevel;
+    toppingIds?: string[];
+  }>;
+}
+
+class OrderController {
+  private readonly orderService: OrderService;
+
+  constructor(orderService: OrderService) {
+    this.orderService = orderService;
+  }
+
+  getOrdersCompleteInfo = async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User is not authenticated", "NO_USER");
+    }
+
+    const { status, customerId } = req.query;
+
+    const queryParams: {
+      status?: OrderStatus;
+      customerId?: string;
+    } = {};
+
+    if (status) {
+      const safeStatus = OrderStatusSchema.safeParse(status);
+      if (!safeStatus.success) {
+        throw new BadRequestError("Failed to get orders", "VALIDATION_ERROR");
+      }
+      queryParams.status = safeStatus.data;
+    }
+
+    if (req.user.role === "customer") {
+      queryParams.customerId = req.user.id;
+    } else if (customerId) {
+      if (typeof customerId !== "string") {
+        throw new BadRequestError("Failed to get orders", "VALIDATION_ERROR");
+      }
+      queryParams.customerId = customerId;
+    }
+
+    const orders = await this.orderService.getOrdersCompleteInfo(queryParams);
+    return res.status(200).json({ success: true, data: { orders } });
+  };
+
+  updateOrderStatus = async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User is not authenticated", "NO_USER");
+    }
+
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!id || Array.isArray(id)) {
+      throw new BadRequestError("Failed to update order status", "INVALID_ID");
+    }
+
+    const updatedOrder = await this.orderService.updateOrderStatus(id, status);
+    return res
+      .status(200)
+      .json({ success: true, data: { order: updatedOrder } });
+  };
+
+  createOrder = async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User is not authenticated", "NO_USER");
+    }
+
+    const { id: customerId } = req.user;
+    const orderData: OrderRequestPayload = {
+      customerId,
+      ...req.body,
+    };
+    const createdOrder = await this.orderService.createOrder(orderData);
+    return res
+      .status(201)
+      .json({ success: true, data: { order: createdOrder } });
+  };
+}
+
+export type { OrderController };
+export default new OrderController(orderService);

@@ -1,0 +1,15 @@
+@import '@/global.css';
+
+@layer components {
+  .feature-card {
+    @apply bg-white rounded-lg shadow-md p-6 transition-transform duration-300 ease-in-out hover:scale-105;
+  }
+
+  .feature-card-title {
+    @apply text-xl font-semibold mb-2 text-default-font;
+  }
+
+  .feature-card-description {
+    @apply text-subtext-color text-sm;
+  }
+}

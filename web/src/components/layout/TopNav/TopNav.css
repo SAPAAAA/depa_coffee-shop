@@ -1,0 +1,27 @@
+@import "@/global.css";
+
+@layer components {
+  .nav {
+    @apply h-full bg-transparent flex flex-row items-center justify-end-safe gap-8;
+  }
+
+  .nav-list {
+    @apply h-full w-full flex flex-row items-center gap-0;
+  }
+
+  .nav-item {
+    @apply h-full;
+  }
+
+  .nav-link {
+    @apply h-full flex items-center gap-2 px-3 text-body font-body text-default-font transition-colors duration-300;
+  }
+
+  .nav-link:hover {
+    @apply bg-black text-white;
+  }
+
+  .nav-link.active {
+    @apply bg-black text-white font-body-bold;
+  }
+}

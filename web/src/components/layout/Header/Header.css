@@ -1,0 +1,16 @@
+@import "@/global.css";
+
+@layer components {
+  .header {
+    @apply w-full sticky top-0 z-50 bg-neutral-100 border-b-2 border-neutral-border;
+  }
+
+
+  .header-content {
+    @apply h-16 w-full flex flex-row items-center justify-between gap-4 px-4;
+  }
+  
+  .header-logo {
+    @apply aspect-square w-10;
+  }
+}

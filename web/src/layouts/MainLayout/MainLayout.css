@@ -1,0 +1,7 @@
+@import "@/global.css";
+
+@layer components {
+  .main-layout {
+    @apply min-h-screen grid grid-rows-[auto_1fr_auto] gap-8;
+  }
+}

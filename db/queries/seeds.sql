@@ -1,0 +1,60 @@
+-- CUSTOMERS
+INSERT INTO customers (id, username, password, first_name, last_name, email, phone_number, date_of_birth, gender, delivery_address, is_verified)
+VALUES 
+('018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9e01', 'johndoe', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'John', 'Doe', 'john.doe@email.com', '0901234567', '1992-05-15', 'Male', '123 Maple St, Springfield', TRUE),
+('018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9e02', 'janesmith', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'Jane', 'Smith', 'jane.smith@email.com', '0907654321', '1995-10-20', 'Female', '456 Oak Ave, Metropolis', TRUE),
+('018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9e03', 'mike_brown', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'Mike', 'Brown', 'mike.b@email.com', '0901112223', '1988-12-02', 'Male', '789 Pine Rd, Gotham', FALSE);
+
+-- STAFF
+INSERT INTO staff (id, username, password, name, role)
+VALUES 
+('018e9f2b-7c1a-7b3a-9e1d-6a1b2c3d4e01', 'admin_one', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'Alice Johnson', 'admin'),
+('018e9f2b-7c1a-7b3a-9e1d-6a1b2c3d4e02', 'barista_bob', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'Bob Wilson', 'barista');
+
+-- DRINK CATEGORIES
+INSERT INTO drink_categories (id, name, description)
+VALUES 
+('018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e01', 'Milk Tea', 'Classic creamy tea with various flavors'),
+('018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e02', 'Fruit Tea', 'Refreshing tea infused with fresh fruits'),
+('018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e03', 'Coffee', 'Energizing brewed coffee selections');
+
+-- TOPPINGS
+INSERT INTO toppings (id, name, image_url, unit_price, stock_quantity)
+VALUES 
+('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01', 'Black Pearl', 'https://cdn.example.com/images/toppings/black-pearl.jpg', 0.50, 500),
+('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e02', 'Grass Jelly', 'https://cdn.example.com/images/toppings/grass-jelly.jpg', 0.75, 200),
+('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03', 'Cheese Foam', 'https://cdn.example.com/images/toppings/cheese-foam.jpg', 1.00, 100),
+('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e04', 'Aloe Vera', 'https://cdn.example.com/images/toppings/aloe-vera.jpg', 0.60, 150);
+
+-- DRINKS
+INSERT INTO drinks (id, name, stock_quantity, description, category_id)
+VALUES 
+('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Signature Milk Tea', 1000, 'Our best-selling house blend', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e01'),
+('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Peach Oolong Tea', 500, 'Fragrant oolong with peach bits', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e02'),
+('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Iced Latte', 300, 'Espresso with chilled milk', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e03');
+
+-- DRINK VARIANTS
+INSERT INTO drink_variants (id, drink_id, name, volume_ml, price)
+VALUES 
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Regular', 500, 4.50),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Large', 700, 5.50),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Standard', 500, 5.00),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e04', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Tall', 350, 4.25);
+
+-- ORDERS
+INSERT INTO orders (id, customer_id, status, total_amount, payment_method, delivery_method, shipping_fee, delivery_address)
+VALUES 
+('018e9f2b-7c1a-7b3a-9e1d-1c1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9e01', 'completed', 11.25, 'credit_card', 'delivery', 2.00, '123 Maple St, Springfield'),
+('018e9f2b-7c1a-7b3a-9e1d-1c1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9e02', 'processing', 5.50, 'cash', 'pickup', 0.00, NULL);
+
+-- ORDER ITEMS
+INSERT INTO order_items (id, order_id, drink_variant_id, quantity, sugar_level, ice_level, calculated_price)
+VALUES 
+('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-1c1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e01', 2, '50%', 'normal_ice', 9.25),
+('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-1c1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', 1, '100%', 'no_ice', 5.50);
+
+-- ORDER ITEM TOPPINGS
+INSERT INTO order_item_toppings (order_item_id, topping_id)
+VALUES 
+('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01'),
+('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03');
