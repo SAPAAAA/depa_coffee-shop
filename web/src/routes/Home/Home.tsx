@@ -1,5 +1,6 @@
 import { FeatureCard } from "@/components/ui/FeatureCard";
 import { Hero } from "@/components/ui/Hero";
+import "./Home.css";
 
 const FEATURES_DATA = [
   {

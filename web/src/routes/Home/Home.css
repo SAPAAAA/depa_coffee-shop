@@ -1,0 +1,7 @@
+@import '@/global.css';
+
+@layer components {
+  .home-container {
+    @apply min-h-screen flex flex-col items-center justify-center bg-brand-50;
+  }
+}

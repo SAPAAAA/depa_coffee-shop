@@ -1,0 +1,32 @@
+@import '@/global.css';
+
+@layer components {
+  .auth-layout {
+    @apply min-h-screen flex bg-brand-50;
+  }
+
+  .auth-card {
+    @apply w-full max-w-md m-auto p-8 bg-white shadow-xl rounded-2xl border border-neutral-border;
+    z-index: 10;
+  }
+
+  .auth-header {
+    @apply text-center mb-8;
+  }
+
+  .auth-logo {
+    @apply h-12 mx-auto mb-4;
+  }
+
+  .auth-header h1 {
+    @apply text-2xl font-bold text-default-font;
+  }
+
+  .auth-header p {
+    @apply text-subtext-color mt-2;
+  }
+
+  .auth-footer {
+    @apply mt-8 text-center text-xs text-subtext-color;
+  }
+}
