@@ -46,7 +46,6 @@ CREATE TABLE toppings (
 CREATE TABLE drinks (
     id UUID PRIMARY KEY DEFAULT uuidv7(),
     name VARCHAR(255) NOT NULL,
-    stock_quantity INT DEFAULT 0,
     description TEXT,
     image_url VARCHAR(255) DEFAULT NULL,
     category_id UUID REFERENCES drink_categories(id)

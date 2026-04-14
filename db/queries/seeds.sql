@@ -27,11 +27,11 @@ VALUES
 ('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e04', 'Aloe Vera', 'https://cdn.example.com/images/toppings/aloe-vera.jpg', 0.60, 150);
 
 -- DRINKS
-INSERT INTO drinks (id, name, stock_quantity, description, category_id)
+INSERT INTO drinks (id, name, description, category_id)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Signature Milk Tea', 1000, 'Our best-selling house blend', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e01'),
-('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Peach Oolong Tea', 500, 'Fragrant oolong with peach bits', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e02'),
-('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Iced Latte', 300, 'Espresso with chilled milk', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e03');
+('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Signature Milk Tea', 'Our best-selling house blend', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e01'),
+('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Peach Oolong Tea', 'Fragrant oolong with peach bits', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e02'),
+('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Iced Latte', 'Espresso with chilled milk', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e03');
 
 -- DRINK VARIANTS
 INSERT INTO drink_variants (id, drink_id, name, volume_ml, price)
