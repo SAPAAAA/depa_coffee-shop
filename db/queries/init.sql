@@ -103,3 +103,9 @@ CREATE TABLE cart_items (
     ice_level VARCHAR(20),
     calculated_price DECIMAL(10, 2)
 );
+
+CREATE TABLE cart_item_toppings (
+    cart_item_id UUID REFERENCES cart_items(id) ON DELETE CASCADE,
+    topping_id UUID REFERENCES toppings(id) ON DELETE CASCADE,
+    PRIMARY KEY (cart_item_id, topping_id)
+);
