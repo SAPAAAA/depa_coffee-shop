@@ -29,7 +29,8 @@ export default defineConfig([
           "namedComponents": "arrow-definition",
           "unnamedComponents": "arrow-definition"
         }
-      ]
+      ],
+      "@typescript-eslint/consistent-type-imports": "error",
     }
   },
 ])
