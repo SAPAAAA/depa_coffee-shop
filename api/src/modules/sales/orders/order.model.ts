@@ -26,14 +26,17 @@ export type DeliveryMethod = z.infer<typeof DeliveryMethodSchema>;
 export type SugarLevel = z.infer<typeof SugarLevelSchema>;
 export type IceLevel = z.infer<typeof IceLevelSchema>;
 
+// --- ORDER ITEM TOPPINGS ---
 export const OrderItemToppingSchema = z.object({
   orderItemId: z.uuidv7(),
   toppingId: z.uuidv7(),
 });
 export const CreateOrderItemToppingSchema = OrderItemToppingSchema;
+
 export type OrderItemTopping = z.infer<typeof OrderItemToppingSchema>;
 export type CreateOrderItemToppingDTO = z.input<typeof CreateOrderItemToppingSchema>;
 
+// --- ORDER ITEMS ---
 export const OrderItemSchema = z.object({
   id: z.uuidv7(),
   orderId: z.uuidv7(),
@@ -43,18 +46,23 @@ export const OrderItemSchema = z.object({
   iceLevel: IceLevelSchema.default("normal_ice"),
   calculatedPrice: z.coerce.number().nonnegative(),
 });
+
 export const CompleteOrderItemSchema = OrderItemSchema.extend({
   toppings: z.array(OrderItemToppingSchema).default([]),
 });
+
 export const CreateOrderItemSchema = OrderItemSchema.omit({ id: true, orderId: true });
+
 export const CreateCompleteOrderItemSchema = CreateOrderItemSchema.extend({
   toppings: z.array(OrderItemToppingSchema.omit({ orderItemId: true })).default([]),
 });
+
 export type OrderItem = z.infer<typeof OrderItemSchema>;
 export type CompleteOrderItem = z.infer<typeof CompleteOrderItemSchema>;
 export type CreateOrderItemDTO = z.input<typeof CreateOrderItemSchema>;
 export type CreateCompleteOrderItemDTO = z.input<typeof CreateCompleteOrderItemSchema>;
 
+// --- ORDERS ---
 export const OrderSchema = z.object({
   id: z.uuidv7(),
   customerId: z.uuidv7(),
@@ -66,18 +74,22 @@ export const OrderSchema = z.object({
   shippingFee: z.coerce.number().nonnegative().default(0),
   deliveryAddress: z.string().nullish().default(null),
 });
+
 export const CompleteOrderSchema = OrderSchema.extend({
   items: z.array(CompleteOrderItemSchema).default([]),
 });
+
 export const CreateOrderSchema = OrderSchema.omit({
   id: true,
   orderDate: true,
 });
+
 export const CreateCompleteOrderSchema = CreateOrderSchema.extend({
   items: z.array(
     CreateCompleteOrderItemSchema, // No need to omit orderId here since it's not part of the Create schema
   ).default([]),
 });
+
 export type Order = z.infer<typeof OrderSchema>;
 export type CompleteOrder = z.infer<typeof CompleteOrderSchema>;
 export type CreateOrderDTO = z.input<typeof CreateOrderSchema>;
