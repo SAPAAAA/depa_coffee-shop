@@ -66,16 +66,16 @@ VALUES
 ('018e9f2b-7c1a-7b3a-9e1d-3e1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9e03', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- CART ITEMS
-INSERT INTO cart_items (id, cart_id, drink_id, quantity, sugar_level, ice_level, calculated_price)
+INSERT INTO cart_items (id, cart_id, drink_variant_id, quantity, sugar_level, ice_level, calculated_price)
 VALUES 
 ('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-3e1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e01', 1, '50%', 'less_ice', 5.50),
-('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-3e1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', 2, '75%', 'normal_ice', 10.00);
+('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-3e1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', 2, '75%', 'normal_ice', 10.00),
 ('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-3e1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', 1, '100%', 'extra_ice', 6.10);
 
 
 -- CART ITEM TOPPINGS
 INSERT INTO cart_item_toppings (cart_item_id, topping_id)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01'), -- Black Pearl
-('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03'); -- Cheese Foam
-('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e04'); -- Aloe Vera
+('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01'), 
+('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03'), 
+('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e04');

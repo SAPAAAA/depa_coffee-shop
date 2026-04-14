@@ -97,7 +97,7 @@ CREATE TABLE carts (
 CREATE TABLE cart_items (
     id UUID PRIMARY KEY DEFAULT uuidv7(),
     cart_id UUID REFERENCES carts(id) ON DELETE CASCADE,
-    drink_id UUID REFERENCES drink_variants(id) ON DELETE CASCADE,
+    drink_variant_id UUID REFERENCES drink_variants(id) ON DELETE CASCADE,
     quantity INT NOT NULL DEFAULT 1,
     sugar_level VARCHAR(20),
     ice_level VARCHAR(20),
