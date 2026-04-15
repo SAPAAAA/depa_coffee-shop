@@ -6,7 +6,7 @@ export const DrinkSchema = z.object({
   id: z.uuidv7(),
   name: z.string(),
   description: z.string().nullish(),
-  imageUrl: z.url().nullish(),
+  imageUrl: z.union([z.string(), z.url()]).nullish().default(null),
   categoryId: z.uuidv7(),
 });
 

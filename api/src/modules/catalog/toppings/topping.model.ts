@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const ToppingSchema = z.object({
   id: z.uuidv7(),
   name: z.string().min(1).max(255),
-  imageUrl: z.url().nullish().default(null),
+    imageUrl: z.union([z.string(), z.url()]).nullish().default(null),
   unitPrice: z.number(),
   stockQuantity: z.number(),
 });
