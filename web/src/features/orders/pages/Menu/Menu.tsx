@@ -6,18 +6,20 @@ import { useLoaderData } from "react-router";
 export const clientLoader = menuLoader;
 
 const Menu = () => {
-  const { menuItems } = useLoaderData() as Awaited<ReturnType<typeof clientLoader>>;
+  const { menu } = useLoaderData() as Awaited<ReturnType<typeof clientLoader>>;
+  const categories = menu.categories;
+  console.log("Menu:", menu);
 
   return (
     <main className="menu-container">
-      {menuItems.map((category) => (
+      {categories.map((category) => (
         <CategoryShelf
           key={category.id}
           categoryHeader={{
             name: category.name,
             position: "left",
           }}
-          items={category.items}
+          items={category.drinks}
         />
       ))}
     </main>

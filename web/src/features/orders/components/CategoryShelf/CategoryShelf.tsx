@@ -1,5 +1,6 @@
 import { useState, type CSSProperties } from "react";
 import "./CategoryShelf.css";
+import type { MenuDrink } from "@api-types/catalog/drinks/drink.model";
 
 interface CategoryShelfProps {
   maxVisibleItems?: number;
@@ -7,7 +8,7 @@ interface CategoryShelfProps {
     name: string;
     position: "left" | "center" | "right";
   };
-  items: any[];
+  items: MenuDrink[];
 }
 
 const CategoryShelf = ({
