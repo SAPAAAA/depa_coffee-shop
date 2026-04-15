@@ -1,0 +1,89 @@
+@import "@/global.css";
+
+@layer components {
+  .category-shelf {
+    @apply w-full flex flex-col gap-6 mb-8;
+  }
+
+  .category-header {
+    @apply flex items-center text-heading-2 font-bold text-default-font border-b-2 border-neutral-200 pb-1 mx-4 relative;
+  }
+
+  .carousel {
+    @apply w-full relative flex flex-row items-center overflow-hidden gap-4;
+  }
+
+  .carousel-ctrl-overlay {
+    @apply absolute top-0 left-0 w-32 h-full flex items-center justify-between pointer-events-auto;
+  }
+
+  .carousel-ctrl-overlay.carousel-ctrl-overlay-left {
+    @apply left-0;
+  }
+
+  .carousel-ctrl-overlay.carousel-ctrl-overlay-right {
+    @apply left-auto right-0;
+  }
+
+  .carousel-btn {
+    @apply relative h-full w-full cursor-pointer;
+  }
+
+  .carousel-btn:disabled {
+    @apply cursor-default;
+  }
+
+  .carousel-btn-icon {
+    @apply text-4xl text-brand-primary transition-colors pointer-events-none;
+  }
+
+  .carousel-btn:disabled .carousel-btn-icon {
+    @apply text-neutral-300 opacity-50;
+  }
+
+  .carousel-btn-icon:hover {
+    @apply text-brand-700;
+  }
+
+  .carousel-btn-icon.carousel-btn-icon-left {
+    @apply absolute top-1/2 left-1/5 -translate-y-1/2;
+  }
+
+  .carousel-btn-icon.carousel-btn-icon-right {
+    @apply absolute top-1/2 right-1/5 -translate-y-1/2;
+  }
+
+  .carousel-list {
+    @apply mx-16 overflow-x-hidden;
+  }
+
+  .carousel-track {
+    @apply flex flex-row gap-4 h-full w-full transition-transform duration-500 ease-in-out;
+    transform: translateX(
+      calc(var(--current-index) * -1 * (100% + 1rem) / var(--max-visible))
+    );
+  }
+
+  .carousel-item {
+    @apply shrink-0 bg-white rounded-DEFAULT shadow-sm;
+    width: calc(
+      (100% - (1rem * (var(--max-visible) - 1))) / var(--max-visible)
+    );
+  }
+
+  .carousel-item .item-image {
+    @apply w-full aspect-square object-cover rounded-t-DEFAULT;
+  }
+
+  .carousel-item .item-name {
+    @apply mt-2 text-center text-body font-body text-default-font;
+  }
+
+  .carousel-item .item-price {
+    @apply text-center text-body font-body text-neutral-600;
+  }
+
+  .carousel-item .item-description {
+    @apply text-center text-caption font-caption text-subtext-color;
+  }
+}
