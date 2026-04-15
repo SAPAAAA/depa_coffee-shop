@@ -25,7 +25,7 @@ const FEATURES_DATA = [
 
 const Home = () => {
   return (
-    <div className="home-container">
+    <main className="home-container">
       {/* Hero Section */}
       <div className="container mx-auto px-4">
         <Hero
@@ -61,7 +61,7 @@ const Home = () => {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 };
 
