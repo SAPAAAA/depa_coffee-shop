@@ -1,6 +1,6 @@
 import type { DrinkRepository } from './drink.repository';
 import { CreateDrinkSchema, UpdateDrinkSchema, type CreateDrinkDTO, type UpdateDrinkDTO } from './drink.model';
-import type { CategoryRepository } from '@/modules/catalog/categories/category.repository';
+import type { DrinkCategoryRepository } from '@/modules/catalog/categories/category.repository';
 import type { DrinkVariantRepository } from '../variants/variant.repository';
 import drinkRepository from './drink.repository';
 import drinkCategoryRepository from '@/modules/catalog/categories/category.repository';
@@ -9,10 +9,10 @@ import { BadRequestError } from '@/modules/shared/utils/errors';
 
 class DrinkService {
   private readonly drinkRepository: DrinkRepository;
-  private readonly drinkCategoryRepository: CategoryRepository;
+  private readonly drinkCategoryRepository: DrinkCategoryRepository;
   private readonly drinkVariantRepository: DrinkVariantRepository;
 
-  constructor(drinkRepository: DrinkRepository, drinkCategoryRepository: CategoryRepository, drinkVariantRepository: DrinkVariantRepository) {  
+  constructor(drinkRepository: DrinkRepository, drinkCategoryRepository: DrinkCategoryRepository, drinkVariantRepository: DrinkVariantRepository) {  
     this.drinkRepository = drinkRepository;
     this.drinkCategoryRepository = drinkCategoryRepository;
     this.drinkVariantRepository = drinkVariantRepository;
@@ -22,6 +22,10 @@ class DrinkService {
     return await this.drinkRepository.getAllDrinks();
   };
 
+  getDrink = async (id: string) => {
+    return await this.drinkRepository.getDrinkById(id);
+  };
+
   getDrinkCompleteInfo = async (id: string) => {
     const drink = await this.drinkRepository.getDrinkById(id);
     if (!drink) {
@@ -29,7 +33,7 @@ class DrinkService {
     }
     const category = await this.drinkCategoryRepository.getById(drink.categoryId);
     const { categoryId, ...drinkWithoutCategoryId } = drink;
-    const variants = await this.drinkVariantRepository.getVariantsByDrinkId(id);
+    const variants = await this.drinkVariantRepository.getByDrinkId(id);
 
     return {
       ...drinkWithoutCategoryId,

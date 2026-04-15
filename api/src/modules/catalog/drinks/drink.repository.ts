@@ -9,6 +9,8 @@ import {
   type UpdateDrinkDTO,
   DrinkSchema,
   CompleteDrinkSchema,
+  type MenuDrink,
+  MenuDrinkSchema,
 } from "./drink.model";
 
 declare module "knex/types/tables" {
@@ -39,6 +41,28 @@ class DrinkRepository {
       DrinkSchema.parse(camelcaseKeys(drink, { deep: true })),
     );
   };
+
+  getAllDrinksBaseInfo = async (trx?: Knex | Knex.Transaction): Promise<MenuDrink[]> => {
+    const connection = this.conn(trx);
+
+    const drinks = await connection("drinks")
+      .leftJoin("drink_variants", "drinks.id", "drink_variants.drink_id")
+      .select(
+        "drinks.id",
+        "drinks.name",
+        "drinks.description",
+        "drinks.category_id",
+        "drinks.image_url",
+        "drink_variants.price",
+        "drink_variants.volume_ml"
+      )
+      .where({ "drink_variants.is_default": true })
+      .groupBy("drinks.id", "drink_variants.id");
+
+    return drinks.map((drink) =>
+      MenuDrinkSchema.parse(camelcaseKeys(drink, { deep: true })),
+    );
+  }
 
   getDrinkById = async (id: string, trx?: Knex | Knex.Transaction): Promise<Drink | null> => {
     const drink = await this.conn(trx)("drinks").where({ id }).first();

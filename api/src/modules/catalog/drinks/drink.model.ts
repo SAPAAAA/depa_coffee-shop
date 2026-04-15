@@ -15,6 +15,11 @@ export const CompleteDrinkSchema = DrinkSchema.omit({ categoryId: true }).extend
   variants: DrinkVariantSchema.omit({ drinkId: true }).array(),
 });
 
+export const MenuDrinkSchema = DrinkSchema.extend({
+  price: z.coerce.number().positive(),
+  volumeMl: z.coerce.number().positive(),
+});
+
 export const CreateDrinkSchema = DrinkSchema.omit({ id: true });
 export const UpdateDrinkSchema = CreateDrinkSchema.partial();
 
@@ -22,3 +27,4 @@ export type Drink = z.infer<typeof DrinkSchema>;
 export type CompleteDrink = z.infer<typeof CompleteDrinkSchema>;
 export type CreateDrinkDTO = z.infer<typeof CreateDrinkSchema>;
 export type UpdateDrinkDTO = z.infer<typeof UpdateDrinkSchema>;
+export type MenuDrink = z.infer<typeof MenuDrinkSchema>;

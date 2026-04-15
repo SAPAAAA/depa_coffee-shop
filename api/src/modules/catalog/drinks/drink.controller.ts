@@ -16,6 +16,22 @@ class DrinkController {
     return res.status(200).json({ success: true, data: { drinks } });
   });
 
+  getDrink = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    if (!id || Array.isArray(id)) {
+      throw new BadRequestError("Failed to get drink info", "INVALID_ID");
+    }
+
+    const drink = await this.drinkService.getDrink(id);
+
+    if (!drink) {
+      throw new NotFoundError("Failed to get drink info", "OBJECT_NOT_FOUND");
+    }
+
+    return res.status(200).json({ success: true, data: { drink } });
+  });
+
   getDrinkCompleteInfo = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
 

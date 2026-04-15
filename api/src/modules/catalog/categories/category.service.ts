@@ -1,15 +1,15 @@
 import type { DrinkRepository } from "@/modules/catalog/drinks/drink.repository";
-import type { CategoryRepository } from "./category.repository";
+import type { DrinkCategoryRepository } from "./category.repository";
 import categoryRepository from "./category.repository";
 import drinkRepository from "@/modules/catalog/drinks/drink.repository";
 import type { Drink } from "../drinks/drink.model";
 
 class DrinkCategoryService {
-  private readonly categoryRepository: CategoryRepository;
+  private readonly categoryRepository: DrinkCategoryRepository;
   private readonly drinkRepository: DrinkRepository;
 
   constructor(
-    categoryRepository: CategoryRepository,
+    categoryRepository: DrinkCategoryRepository,
     drinkRepository: DrinkRepository,
   ) {
     this.categoryRepository = categoryRepository;

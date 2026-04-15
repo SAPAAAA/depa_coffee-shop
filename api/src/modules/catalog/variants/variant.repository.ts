@@ -30,34 +30,56 @@ class DrinkVariantRepository {
     return trx || this.knex;
   }
 
-  getAllVariants = async (trx?: Knex | Knex.Transaction): Promise<DrinkVariant[]> => {
+  getAllVariants = async (
+    trx?: Knex | Knex.Transaction,
+  ): Promise<DrinkVariant[]> => {
     const variants = await this.conn(trx)("drink_variants").select("*");
     return variants.map((variant) =>
       DrinkVariantSchema.parse(camelcaseKeys(variant, { deep: true })),
     );
   };
 
-  getById = async (id: string, trx?: Knex | Knex.Transaction): Promise<DrinkVariant | null> => {
-    const variant = await this.conn(trx)("drink_variants").where({ id }).first();
+  getById = async (
+    id: string,
+    trx?: Knex | Knex.Transaction,
+  ): Promise<DrinkVariant | null> => {
+    const variant = await this.conn(trx)("drink_variants")
+      .where({ id })
+      .first();
     if (!variant) {
       return null;
     }
     return DrinkVariantSchema.parse(camelcaseKeys(variant, { deep: true }));
   };
 
+  async getDefaultVariantByDrinkId(
+    drinkId: string,
+    trx?: Knex | Knex.Transaction,
+  ): Promise<DrinkVariant | null> {
+    const variant = await this.conn(trx)("drink_variants")
+      .where({ drink_id: drinkId, is_default: true })
+      .first();
+    if (!variant) {
+      return null;
+    }
+    return DrinkVariantSchema.parse(camelcaseKeys(variant, { deep: true }));
+  }
+
   createVariant = async (
     data: CreateDrinkVariantDTO,
-    trx?: Knex | Knex.Transaction
+    trx?: Knex | Knex.Transaction,
   ): Promise<DrinkVariant> => {
     const dbPayload = snakecaseKeys(data, { deep: true });
-    const [newVariant] = await this.conn(trx)("drink_variants").insert(dbPayload).returning("*");
+    const [newVariant] = await this.conn(trx)("drink_variants")
+      .insert(dbPayload)
+      .returning("*");
     return DrinkVariantSchema.parse(camelcaseKeys(newVariant, { deep: true }));
   };
 
   updateVariant = async (
     id: string,
     data: UpdateDrinkVariantDTO,
-    trx?: Knex | Knex.Transaction
+    trx?: Knex | Knex.Transaction,
   ): Promise<DrinkVariant | null> => {
     const dbPayload = snakecaseKeys(data, { deep: true });
     const [updatedVariant] = await this.conn(trx)("drink_variants")
@@ -73,16 +95,24 @@ class DrinkVariantRepository {
     );
   };
 
-  deleteVariant = async (id: string, trx?: Knex | Knex.Transaction): Promise<void> => {
+  deleteVariant = async (
+    id: string,
+    trx?: Knex | Knex.Transaction,
+  ): Promise<void> => {
     await this.conn(trx)("drink_variants").where({ id }).delete();
   };
 
-  getVariantsByDrinkId = async (drinkId: string, trx?: Knex | Knex.Transaction): Promise<DrinkVariant[]> => {
-    const variants = await this.conn(trx)("drink_variants").where({ drink_id: drinkId }).select("*");
+  getByDrinkId = async (
+    drinkId: string,
+    trx?: Knex | Knex.Transaction,
+  ): Promise<DrinkVariant[]> => {
+    const variants = await this.conn(trx)("drink_variants")
+      .where({ drink_id: drinkId })
+      .select("*");
     return variants.map((variant) =>
       DrinkVariantSchema.parse(camelcaseKeys(variant, { deep: true })),
     );
-  }
+  };
 }
 
 export type { DrinkVariantRepository };

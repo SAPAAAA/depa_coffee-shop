@@ -1,9 +1,10 @@
 import express from 'express';
 import drinkController from './drink.controller';
 
-const router = express.Router();
+const route = express.Router();
 
-router.get('/', drinkController.getAllDrinks);
-router.get('/:id', drinkController.getDrinkCompleteInfo);
+route.get('/', drinkController.getAllDrinks);
+route.get('/:id', drinkController.getDrink);
+route.get('/:id/complete', drinkController.getDrinkCompleteInfo);
 
-export default router;
+export default route;

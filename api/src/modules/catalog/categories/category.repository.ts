@@ -19,7 +19,7 @@ declare module "knex/types/tables" {
   }
 }
 
-class CategoryRepository {
+class DrinkCategoryRepository {
   private readonly knex: Knex;
 
   constructor(knex: Knex) {
@@ -76,5 +76,5 @@ class CategoryRepository {
   };
 }
 
-export type { CategoryRepository };
-export default new CategoryRepository(db);
+export type { DrinkCategoryRepository };
+export default new DrinkCategoryRepository(db);
