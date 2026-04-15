@@ -2,7 +2,7 @@
 
 @layer components {
   .nav {
-    @apply h-full bg-transparent flex flex-row items-center justify-end-safe gap-8;
+    @apply h-full bg-transparent flex flex-row items-center justify-end-safe;
   }
 
   .nav-list {
@@ -23,5 +23,13 @@
 
   .nav-link.active {
     @apply bg-black text-white font-body-bold;
+  }
+
+  .nav-cart {
+    @apply relative h-full pointer-events-auto;
+  }
+
+  .cart-button {
+    @apply h-full w-full px-3 bg-transparent text-default-font transition-colors duration-300 cursor-pointer;
   }
 }
