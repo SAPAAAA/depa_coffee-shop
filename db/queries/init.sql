@@ -56,7 +56,8 @@ CREATE TABLE drink_variants (
     drink_id UUID REFERENCES drinks(id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     volume_ml INT NOT NULL,
-    price DECIMAL(10,2) NOT NULL
+    price DECIMAL(10,2) NOT NULL,
+    is_default BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE orders (

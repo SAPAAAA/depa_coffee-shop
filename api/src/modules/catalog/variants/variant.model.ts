@@ -7,6 +7,7 @@ export const DrinkVariantSchema = z.object({
   stockQuantity: z.number().int().nonnegative().default(0),
   volumeMl: z.number().positive(),
   price: z.coerce.number().positive(),
+  isDefault: z.boolean().default(false),
 });
 
 export const CreateDrinkVariantSchema = DrinkVariantSchema.omit({ id: true });

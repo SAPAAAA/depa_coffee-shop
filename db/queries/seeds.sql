@@ -21,25 +21,25 @@ VALUES
 -- TOPPINGS
 INSERT INTO toppings (id, name, image_url, unit_price, stock_quantity)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01', 'Black Pearl', 'https://cdn.example.com/images/toppings/black-pearl.jpg', 0.50, 500),
-('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e02', 'Grass Jelly', 'https://cdn.example.com/images/toppings/grass-jelly.jpg', 0.75, 200),
-('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03', 'Cheese Foam', 'https://cdn.example.com/images/toppings/cheese-foam.jpg', 1.00, 100),
-('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e04', 'Aloe Vera', 'https://cdn.example.com/images/toppings/aloe-vera.jpg', 0.60, 150);
+('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01', 'Black Pearl', '/images/toppings/aloe-vera.jpg', 0.50, 500),
+('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e02', 'Grass Jelly', '/images/toppings/grass-jelly.jpg', 0.75, 200),
+('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03', 'Cheese Foam', '/images/toppings/cheese-foam.jpg', 1.00, 100),
+('018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e04', 'Aloe Vera', '/images/toppings/aloe-vera.jpg', 0.60, 150);
 
 -- DRINKS
-INSERT INTO drinks (id, name, description, category_id)
+INSERT INTO drinks (id, name, description, category_id, image_url)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Signature Milk Tea', 'Our best-selling house blend', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e01'),
-('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Peach Oolong Tea', 'Fragrant oolong with peach bits', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e02'),
-('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Iced Latte', 'Espresso with chilled milk', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e03');
+('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Signature Milk Tea', 'Our best-selling house blend', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e01', '/images/drinks/signature-milk-tea.jpg'),
+('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Peach Oolong Tea', 'Fragrant oolong with peach bits', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e02', '/images/drinks/peach-oolong-tea.jpg'),
+('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Iced Latte', 'Espresso with chilled milk', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e03', '/images/drinks/iced-latte.jpg');
 
 -- DRINK VARIANTS
-INSERT INTO drink_variants (id, drink_id, name, volume_ml, price)
+INSERT INTO drink_variants (id, drink_id, name, volume_ml, price, is_default)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Regular', 500, 4.50),
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Large', 700, 5.50),
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Standard', 500, 5.00),
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e04', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Tall', 350, 4.25);
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Regular', 500, 4.50, TRUE),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Large', 700, 5.50, FALSE),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Standard', 500, 5.00, TRUE),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e04', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Tall', 350, 4.25, TRUE);
 
 -- ORDERS
 INSERT INTO orders (id, customer_id, status, total_amount, payment_method, delivery_method, shipping_fee, delivery_address)
