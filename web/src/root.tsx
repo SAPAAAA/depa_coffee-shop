@@ -9,6 +9,16 @@ import {
 import type { Route } from "./+types/root";
 import "./global.css";
 
+export function HydrateFallback() {
+  return (
+    <div className="flex h-screen w-screen items-center justify-center bg-brand-50">
+      <div className="text-center">
+        <h1 className="text-xl font-semibold text-default-font">Loading...</h1>
+      </div>
+    </div>
+  );
+}
+
 export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
