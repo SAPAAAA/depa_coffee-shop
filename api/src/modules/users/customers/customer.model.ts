@@ -21,7 +21,6 @@ export const CreateCustomerSchema = CustomerSchema.omit({
 export const UpdateCustomerSchema = CreateCustomerSchema.partial();
 
 export const CustomerResponseSchema = CustomerSchema.omit({
-  id: true,
   password: true,
   updatedAt: true,
 });
