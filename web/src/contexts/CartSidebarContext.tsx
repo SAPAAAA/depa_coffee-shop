@@ -11,7 +11,7 @@ export interface CartItem {
   sugarLevel: SugarLevel;
   iceLevel: IceLevel;
   quantity: number;
-  toppings: Topping[];
+  toppings: Array<{ topping: Topping; quantity: number }>;
   calculatedPrice: number;
 }
 
@@ -20,7 +20,7 @@ interface CartSidebarContextValue {
   openSidebar: () => void;
   closeSidebar: () => void;
   toggleSidebar: () => void;
-  addItem: (item: Omit<CartItem, "id" | "calculatedPrice">) => void;
+  addItem: (item: Omit<CartItem, "id" | "calculatedPrice">) => Promise<void>;
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   updateItem: (itemId: string, updatedFields: Partial<Omit<CartItem, "id">>) => void;
