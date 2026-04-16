@@ -75,34 +75,31 @@ class OrderService {
         }
         fetchedVariants.set(item.orderVariantId, drinkVariant);
 
-        let toppings: Topping[] = [];
-        if (item.toppingIds && item.toppingIds.length > 0) {
-          const toppingsPromise = item.toppingIds.map((toppingId) => {
-            const cachedTopping = fetchedToppings.get(toppingId);
-            if (cachedTopping) {
-              return Promise.resolve(cachedTopping);
+        let toppings: Array<{ topping: Topping; quantity: number }> = [];
+        if (item.toppings && item.toppings.length > 0) {
+          const toppingsPromise = item.toppings.map(async (t) => {
+            const cachedTopping = fetchedToppings.get(t.id);
+            const topping = cachedTopping || await this.toppingRepository.getToppingById(t.id, trx);
+
+            if (topping) {
+              fetchedToppings.set(t.id, topping);
+              return { topping, quantity: t.quantity ?? 1 };
             }
-            return (
-              this.toppingRepository.getToppingById(toppingId, trx) ??
-              Promise.resolve(null)
-            );
+
+            return null;
           });
 
           const resolvedToppings = await Promise.all(toppingsPromise);
-          toppings = resolvedToppings.filter(
-            (t): t is Topping => t !== null && typeof t !== "string",
-          );
+          const validToppings = resolvedToppings.filter((t) => t !== null) as Array<{ topping: Topping; quantity: number }>;
 
-          if (toppings.length !== item.toppingIds.length) {
+          if (validToppings.length !== item.toppings.length) {
             throw new NotFoundError(
               "Failed to create order - some toppings not found",
               "OBJECT_NOT_FOUND",
             );
           }
 
-          item.toppingIds.forEach((toppingId, index) => {
-            fetchedToppings.set(toppingId, toppings[index]);
-          });
+          toppings = validToppings;
         }
 
         const builtItem = this.orderItemBuilder

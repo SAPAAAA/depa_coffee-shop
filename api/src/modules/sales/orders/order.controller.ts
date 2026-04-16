@@ -22,7 +22,7 @@ export interface OrderRequestPayload {
     quantity?: number;
     iceLevel?: IceLevel;
     sugarLevel?: SugarLevel;
-    toppingIds?: string[];
+    toppings?: Array<{ id: string; quantity?: number }>;
   }>;
 }
 

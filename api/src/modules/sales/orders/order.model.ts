@@ -30,7 +30,9 @@ export type IceLevel = z.infer<typeof IceLevelSchema>;
 export const OrderItemToppingSchema = z.object({
   orderItemId: z.uuidv7(),
   toppingId: z.uuidv7(),
+  quantity: z.number().int().positive().default(1),
 });
+
 export const CreateOrderItemToppingSchema = OrderItemToppingSchema;
 
 export type OrderItemTopping = z.infer<typeof OrderItemToppingSchema>;
