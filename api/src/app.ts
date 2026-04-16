@@ -10,6 +10,9 @@ import drinkRoute from "@/modules/catalog/drinks/drink.routes";
 import orderRoute from "@/modules/sales/orders/order.routes";
 import authRoute from "@/modules/auth/auth.routes";
 import menuRoute from "@/modules/catalog/menu/menu.routes";
+import cartRoute from "@/modules/sales/carts/cart.routes";
+import drinkVariantRoute from "@/modules/catalog/variants/variant.routes";
+import toppingRoute from "@/modules/catalog/toppings/topping.routes";
 import corsMdw from "./modules/shared/middlewares/cors.mdw";
 
 const apiPrefix = "/api/v1";
@@ -26,6 +29,9 @@ baseRoute.use("/auth", authRoute);
 baseRoute.use("/drinks", drinkRoute);
 baseRoute.use("/orders", orderRoute);
 baseRoute.use("/menu", menuRoute);
+baseRoute.use("/carts", cartRoute);
+baseRoute.use("/variants", drinkVariantRoute);
+baseRoute.use("/toppings", toppingRoute);
 
 baseRoute.get("/", (_req: Request, res: Response) => {
   res.send("Welcome to the Coffee Shop API!");
