@@ -69,7 +69,7 @@ class HttpClient {
               method,
               body,
               options,
-              retryCount++
+              retryCount + 1
             );
           } catch (error) {
             this.isRefreshing = false;
