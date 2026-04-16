@@ -8,7 +8,7 @@ import {
 export default [
   layout("./layouts/MainLayout/index.ts", [
     index("./routes/Home/index.ts"),
-    route("menu/*", "./features/orders/pages/Menu/index.ts"),
+    route("menu/*", "./features/drinks/pages/Menu/index.ts"),
   ]),
   layout("./layouts/AuthLayout/index.ts", [
     route("login", "./features/auth/pages/Login/index.ts"),

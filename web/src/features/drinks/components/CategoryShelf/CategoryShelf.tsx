@@ -9,12 +9,14 @@ interface CategoryShelfProps {
     position: "left" | "center" | "right";
   };
   items: MenuDrink[];
+  onDrinkClick: (drinkId: string) => void;
 }
 
 const CategoryShelf = ({
   maxVisibleItems = 5,
   categoryHeader,
   items,
+  onDrinkClick,
 }: Readonly<CategoryShelfProps>) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -41,16 +43,21 @@ const CategoryShelf = ({
             className="carousel-track"
           >
             {items.map((item) => (
-              <div key={item.id} className="carousel-item">
+              <button
+                key={item.id}
+                type="button"
+                className="carousel-item"
+                onClick={() => onDrinkClick(item.id)}
+              >
                 <img
                   src={item.imageUrl ?? ""}
                   alt={item.name}
                   className="item-image"
                 />
-                <h3 className="item-name">{item.name}</h3>
-                <p className="item-description">{item.description}</p>
+                <span className="item-name">{item.name}</span>
+                <span className="item-description">{item.description}</span>
                 <span className="item-price">${item.price.toFixed(2)}</span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
