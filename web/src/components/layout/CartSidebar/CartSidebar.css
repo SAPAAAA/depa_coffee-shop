@@ -2,7 +2,7 @@
 
 @layer components {
   .cart-drawer-backdrop {
-    @apply fixed inset-0 bg-neutral-900/40 backdrop-blur-sm z-40 transition-opacity pointer-events-none;
+    @apply fixed inset-0 bg-neutral-900/40 backdrop-blur-sm z-40 transition-opacity;
   }
 
   .cart-item {
