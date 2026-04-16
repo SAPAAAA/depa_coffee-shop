@@ -14,7 +14,7 @@
   }
 
   .carousel-ctrl-overlay {
-    @apply absolute top-0 left-0 w-32 h-full flex items-center justify-between pointer-events-auto;
+    @apply absolute top-0 left-0 w-32 h-full flex items-center justify-between pointer-events-none;
   }
 
   .carousel-ctrl-overlay.carousel-ctrl-overlay-left {
@@ -26,11 +26,11 @@
   }
 
   .carousel-btn {
-    @apply relative h-full w-full cursor-pointer;
+    @apply relative h-full w-full cursor-pointer pointer-events-auto;
   }
 
   .carousel-btn:disabled {
-    @apply cursor-default;
+    @apply cursor-default pointer-events-none;
   }
 
   .carousel-btn-icon {
