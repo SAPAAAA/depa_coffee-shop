@@ -57,6 +57,7 @@ CREATE TABLE drink_variants (
     name VARCHAR(255) NOT NULL,
     volume_ml INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
+    stock_quantity INT NOT NULL DEFAULT 0,
     is_default BOOLEAN DEFAULT FALSE
 );
 

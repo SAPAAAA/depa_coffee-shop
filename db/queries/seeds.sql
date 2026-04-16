@@ -34,12 +34,12 @@ VALUES
 ('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Iced Latte', 'Espresso with chilled milk', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e03', '/images/drinks/iced-latte.jpg');
 
 -- DRINK VARIANTS
-INSERT INTO drink_variants (id, drink_id, name, volume_ml, price, is_default)
+INSERT INTO drink_variants (id, drink_id, name, volume_ml, price, stock_quantity, is_default)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Regular', 500, 4.50, TRUE),
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Large', 700, 5.50, FALSE),
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Standard', 500, 5.00, TRUE),
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e04', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Tall', 350, 4.25, TRUE);
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Regular', 500, 4.50, 100, TRUE),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Large', 700, 5.50, 80, FALSE),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Standard', 500, 5.00, 150, TRUE),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e04', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Tall', 350, 4.25, 200, TRUE);
 
 -- ORDERS
 INSERT INTO orders (id, customer_id, status, total_amount, payment_method, delivery_method, shipping_fee, delivery_address)
