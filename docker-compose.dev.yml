@@ -44,6 +44,13 @@ services:
       - coffee_shop_network
     env_file:
       - ./db/.env.dev
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - coffee_shop_network
 
 networks:
   coffee_shop_network:
