@@ -26,11 +26,11 @@
   }
 
   .drink-view-layout {
-    @apply flex flex-col md:flex-row gap-8;
+    @apply flex flex-col lg:flex-row gap-8;
   }
 
   .drink-view-image-container {
-    @apply w-full md:w-1/2 aspect-2/1 rounded-lg overflow-hidden border border-neutral-200 bg-white;
+    @apply w-full lg:w-1/2 lg:aspect-2/1 rounded-lg overflow-hidden border border-neutral-200 bg-white;
   }
 
   .drink-view-image {
