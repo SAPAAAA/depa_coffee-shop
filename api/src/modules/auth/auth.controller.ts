@@ -29,6 +29,19 @@ class AuthController {
     return res.status(200).json({ success: true, data: { user } });
   });
 
+  getMe = asyncHandler(async (req: Request, res: Response) => {
+    console.log("GetMe called with user:", req.user);
+    if (!req.user || Array.isArray(req.user) || !req.user.id) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const userId = req.user.id;
+    const role = req.user.role;
+
+    const user = await this.authService.getMe(userId, role);
+    return res.status(200).json({ success: true, data: { user } });
+  });
+
   refreshToken = asyncHandler(async (req: Request, res: Response) => {
     const refreshToken =
       req.cookies?.refreshToken || req.headers.authorization?.split(" ")[1];
