@@ -1,5 +1,5 @@
 import useCartSidebar from "@/hooks/useCartSidebar";
-import { type CSSProperties } from "react";
+import { useMemo, type CSSProperties } from "react";
 import type { CartItem } from "@/contexts/CartSidebarContext";
 import "./CartSidebar.css";
 
@@ -116,6 +116,11 @@ const Sidebar = () => {
   const { isOpen, closeSidebar, items, updateItem, updateQuantity } =
     useCartSidebar();
 
+  const subtotal = useMemo(
+    () => items.reduce((sum, item) => sum + item.calculatedPrice, 0),
+    [items],
+  );
+
   return (
     <>
       {isOpen && <div className="cart-drawer-backdrop" />}
@@ -164,7 +169,7 @@ const Sidebar = () => {
         <footer className="cart-drawer-footer">
           <div className="cart-subtotal">
             <span className="subtotal-label">Subtotal:</span>
-            <output className="subtotal-amount">$0.00</output>
+            <output className="subtotal-value">${subtotal.toFixed(2)}</output>
           </div>
           <button className="checkout-button" type="button">
             Proceed to Checkout

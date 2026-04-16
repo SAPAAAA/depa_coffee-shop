@@ -94,7 +94,7 @@
   }
 
   .subtotal-value {
-    @apply text-body font-body text-default-font;
+    @apply text-body font-body text-default-font ml-2;
   }
 
   .checkout-button {
