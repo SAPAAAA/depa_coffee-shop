@@ -54,10 +54,10 @@ VALUES
 ('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-1c1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', 1, '100%', 'no_ice', 5.50);
 
 -- ORDER ITEM TOPPINGS
-INSERT INTO order_item_toppings (order_item_id, topping_id)
+INSERT INTO order_item_toppings (order_item_id, topping_id, quantity)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01'),
-('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03');
+('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01', 1),
+('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03', 1);
 
 -- CARTS
 INSERT INTO carts (id, customer_id, created_at, updated_at)
@@ -72,10 +72,9 @@ VALUES
 ('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-3e1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', 2, '75%', 'normal_ice', 10.00),
 ('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-3e1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', 1, '100%', 'extra_ice', 6.10);
 
-
 -- CART ITEM TOPPINGS
-INSERT INTO cart_item_toppings (cart_item_id, topping_id)
+INSERT INTO cart_item_toppings (cart_item_id, topping_id, quantity)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01'), 
-('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03'), 
-('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e04');
+('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01', 1), 
+('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03', 1), 
+('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e04', 1);

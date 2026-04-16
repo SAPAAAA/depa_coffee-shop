@@ -86,6 +86,7 @@ CREATE TABLE order_items (
 CREATE TABLE order_item_toppings (
     order_item_id UUID REFERENCES order_items(id) ON DELETE CASCADE,
     topping_id UUID REFERENCES toppings(id),
+    quantity INT NOT NULL DEFAULT 1, -- Added quantity field
     PRIMARY KEY (order_item_id, topping_id)
 );
 
@@ -109,5 +110,6 @@ CREATE TABLE cart_items (
 CREATE TABLE cart_item_toppings (
     cart_item_id UUID REFERENCES cart_items(id) ON DELETE CASCADE,
     topping_id UUID REFERENCES toppings(id) ON DELETE CASCADE,
+    quantity INT NOT NULL DEFAULT 1, -- Added quantity field
     PRIMARY KEY (cart_item_id, topping_id)
 );
