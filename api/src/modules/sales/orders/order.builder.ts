@@ -16,7 +16,7 @@ export interface OrderItemBuilder {
   setVariant(drinkVariant: DrinkVariant): this;
   setIceLevel(iceLevel: IceLevel): this;
   setSugarLevel(sugarLevel: SugarLevel): this;
-  addToppings(toppings: Topping[]): this;
+  addToppings(toppings: Array<{ topping: Topping; quantity: number }>): this;
   setQuantity(quantity: number): this;
   return(): CreateCompleteOrderItemDTO;
   reset(): this;
@@ -38,7 +38,7 @@ export class OrderItemBuilderImpl implements OrderItemBuilder {
   }
 
   setVariant(drinkVariant: DrinkVariant) {
-    this.item.orderVariantId = drinkVariant.id;
+    this.item.drinkVariantId = drinkVariant.id;
     this.variantPrice = drinkVariant.price;
     return this;
   }
@@ -53,12 +53,16 @@ export class OrderItemBuilderImpl implements OrderItemBuilder {
     return this;
   }
 
-  addToppings(toppings: Topping[]) {
+  addToppings(toppings: Array<{ topping: Topping; quantity: number }>) {
     this.item.toppings = toppings.map((topping) => ({
-      toppingId: topping.id,
+      toppingId: topping.topping.id,
+      quantity: topping.quantity,
     }));
     this.toppingsPrice = toppings.reduce(
-      (sum, topping) => sum + topping.unitPrice,
+      (sum, toppingWithQuantity) =>
+        sum +
+        toppingWithQuantity.topping.unitPrice *
+          (toppingWithQuantity.quantity ?? 1),
       0,
     );
     return this;
@@ -70,7 +74,7 @@ export class OrderItemBuilderImpl implements OrderItemBuilder {
   }
 
   return(): CreateCompleteOrderItemDTO {
-    if (!this.item.orderVariantId) {
+    if (!this.item.drinkVariantId) {
       throw new BadRequestError(
         "Failed to build order item",
         "BUILD_OBJECT_ERROR",
@@ -90,7 +94,7 @@ export class OrderItemBuilderImpl implements OrderItemBuilder {
   }
 
   reset() {
-    this.item.orderVariantId = undefined;
+    this.item.drinkVariantId = undefined;
     this.item.iceLevel = "normal_ice";
     this.item.sugarLevel = "100%";
     this.item.quantity = 1;
@@ -180,11 +184,11 @@ export class OrderBuilderImpl implements OrderBuilder {
       );
     }
 
-    const itemsTotal = this.order.items.reduce(
-      (sum, item) => sum + item.calculatedPrice,
-      0,
-    );
-    const totalAmount = itemsTotal + (this.order.shippingFee ?? 0);
+    const itemsTotal = this.order.items.reduce((sum, item) => {
+      const price = (item.calculatedPrice as number) ?? 0;
+      return sum + price;
+    }, 0);
+    const totalAmount = itemsTotal + ((this.order.shippingFee as number) ?? 0);
 
     const safeOrder = CreateCompleteOrderSchema.safeParse({
       ...this.order,
