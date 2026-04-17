@@ -111,12 +111,10 @@ const CartSidebarProvider = ({
 
   const debouncedUpdateCart = useDebounce(
     useCallback(
-      async (itemId: string, newQty: number) => {
+      async (itemId: string, payload: UpdateCompleteCartItemDTO) => {
         if (!user || !cartId) return;
         try {
-          await cartService.updateCartItem(cartId, itemId, {
-            quantity: newQty,
-          });
+          await cartService.updateCartItem(cartId, itemId, payload);
         } catch (error) {
           console.error("Failed to sync updated quantity with server:", error);
         }
@@ -242,6 +240,8 @@ const CartSidebarProvider = ({
     setItems((prev) => prev.filter((item) => item.id !== itemId));
 
   const updateQuantity = (itemId: string, quantity: number) => {
+    if (!user || !cartId) return;
+
     if (quantity < 1) {
       removeItem(itemId);
       return;
@@ -254,7 +254,19 @@ const CartSidebarProvider = ({
           const updatedItem = { ...item, quantity: validQuantity };
 
           // Update the server with the new quantity, debounced to avoid excessive calls
-          debouncedUpdateCart(itemId, validQuantity);
+          const payload: UpdateCompleteCartItemDTO = {
+            id: itemId,
+            cartId: cartId,
+            drinkVariantId: item.variant.id,
+            sugarLevel: item.sugarLevel,
+            iceLevel: item.iceLevel,
+            quantity: validQuantity,
+            toppings: item.toppings.map((toppingWithQuantity) => ({
+              id: toppingWithQuantity.topping.id,
+              quantity: toppingWithQuantity.quantity,
+            })),
+          };
+          debouncedUpdateCart(itemId, payload);
 
           return {
             ...updatedItem,
@@ -310,6 +322,8 @@ const CartSidebarProvider = ({
           };
 
           const payload = {
+            id: itemId,
+            cartId: cartId,
             drinkVariantId: updatedItem.variant.id,
             sugarLevel: updatedItem.sugarLevel,
             iceLevel: updatedItem.iceLevel,
@@ -318,7 +332,7 @@ const CartSidebarProvider = ({
               id: toppingWithQuantity.topping.id,
               quantity: toppingWithQuantity.quantity,
             })),
-          }
+          };
 
           cartService.updateCartItem(cartId, itemId, payload);
 
