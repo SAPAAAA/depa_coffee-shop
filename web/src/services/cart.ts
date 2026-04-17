@@ -1,8 +1,8 @@
 import { httpClient } from "@/utils/httpClient";
-import type { 
-  CompleteCart, 
-  CompleteCartItem, 
-  CreateCompleteCartDTO, 
+import type {
+  CompleteCart,
+  CompleteCartItem,
+  CreateCompleteCartDTO,
   CreateCompleteCartItemDTO,
   UpdateCompleteCartDTO,
   UpdateCompleteCartItemDTO,
@@ -37,16 +37,23 @@ class CartService {
   };
 
   updateCartItem = async (
-    cartId: string, 
-    itemId: string, 
+    cartId: string,
+    itemId: string,
     payload: UpdateCompleteCartItemDTO,
   ) => {
     const response = await httpClient.put<{ cart: CompleteCart }>(
-      `/api/carts/${cartId}/items/${itemId}`, 
+      `/api/carts/${cartId}/items/${itemId}`,
       payload,
     );
     return response.cart;
   };
+
+  removeCartItem = async (cartId: string, itemId: string) => {
+    const response = await httpClient.delete<{ cart: CompleteCart }>(
+      `/api/carts/${cartId}/items/${itemId}`,
+    );
+    return response.cart;
+  }
 
   updateCart = async (cartId: string, payload: UpdateCompleteCartDTO) => {
     const response = await httpClient.put<{ cart: CompleteCart }>(

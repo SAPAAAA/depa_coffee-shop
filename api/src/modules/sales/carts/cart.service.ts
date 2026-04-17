@@ -140,7 +140,7 @@ class CartService {
 
       const variantStillAvailable =
         await this.drinkVariantRepository.checkVariantStock(
-          payload.drinkVariantId!,
+          payload.drinkVariantId,
           payload.quantity ?? 1,
           trx,
         );
@@ -220,6 +220,20 @@ class CartService {
     }
 
     return await this.cartRepository.deleteCart(cartId);
+  };
+
+  deleteCartItem = async (
+    customerId: string,
+    cartId: string,
+    itemId: string,
+  ) => {
+    // Verify ownership
+    const cart = await this.cartRepository.getByCustomerId(customerId);
+    if (cart?.id !== cartId) {
+      throw new ForbiddenError("Failed to remove cart item", "FORBIDDEN");
+    }
+
+    return await this.cartRepository.deleteCartItem(itemId);
   };
 }
 

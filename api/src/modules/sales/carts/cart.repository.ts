@@ -56,6 +56,13 @@ class CartRepository {
     return cart || null;
   };
 
+  getCartItemById = async (itemId: string, trx?: Knex | Knex.Transaction) => {
+    const cartItem = await this.conn(trx)("cart_items")
+      .where({ id: itemId })
+      .first();
+    return cartItem || null;
+  };
+
   getCompleteCartByCustomerId = async (
     customerId: string,
     trx?: Knex | Knex.Transaction,
@@ -188,30 +195,35 @@ class CartRepository {
     trx?: Knex | Knex.Transaction,
   ) => {
     const dbPayload = snakecaseKeys(payload, { deep: true });
-    const toppings = payload.toppings;
-    
+    const { toppings, ...cartItemUpdateData } = dbPayload;
+
     let updatedCartItem = {};
     let updatedCartItemToppings: any[] = [];
 
     if (toppings) {
+      // Delete existing toppings for the cart item
       await this.conn(trx)("cart_item_toppings")
         .where({ cart_item_id: itemId })
         .del();
-      const toppingsPayload = toppings.map((topping) => ({
-        cart_item_id: itemId,
-        topping_id: topping.id,
-        quantity: topping.quantity || 1,
-      }));
-      updatedCartItemToppings = await this.conn(trx)("cart_item_toppings")
-        .insert(toppingsPayload)
-        .onConflict(["cart_item_id", "topping_id"])
-        .merge()
-        .returning("*");
+
+      // Insert new toppings
+      if (toppings.length > 0) {
+        const toppingsPayload = toppings.map((topping) => ({
+          cart_item_id: itemId,
+          topping_id: topping.id,
+          quantity: topping.quantity || 1,
+        }));
+        updatedCartItemToppings = await this.conn(trx)("cart_item_toppings")
+          .insert(toppingsPayload)
+          .onConflict(["cart_item_id", "topping_id"])
+          .merge()
+          .returning("*");
+      }
     }
 
     [updatedCartItem] = await this.conn(trx)("cart_items")
       .where({ id: itemId })
-      .update(dbPayload)
+      .update(cartItemUpdateData)
       .returning("*");
 
     const updatedCartItemWithToppings = {
@@ -224,7 +236,7 @@ class CartRepository {
     return CompleteCartItemSchema.parse(
       camelcaseKeys(updatedCartItemWithToppings, { deep: true }),
     );
-  }
+  };
 
   createCartItem = async (
     cartId: string,
@@ -383,53 +395,12 @@ class CartRepository {
     return CompleteCartSchema.parse(completeCartWithItems);
   };
 
-  updateCartItem = async (
-    cartId: string,
-    itemId: string,
-    payload: Partial<CreateCompleteCartItemDTO>,
-    trx?: Knex | Knex.Transaction,
-  ) => {
-    const dbPayload = snakecaseKeys(payload, { deep: true });
-    const toppings = payload.toppings;
-
-    let updatedCartItem = {};
-    let updatedCartItemToppings: any[] = [];
-
-    if (toppings) {
-      await this.conn(trx)("cart_item_toppings")
-        .where({ cart_item_id: itemId })
-        .del();
-      const toppingsPayload = toppings.map((topping) => ({
-        cart_item_id: itemId,
-        topping_id: topping.id,
-        quantity: topping.quantity || 1,
-      }));
-      updatedCartItemToppings = await this.conn(trx)("cart_item_toppings")
-        .insert(toppingsPayload)
-        .onConflict(["cart_item_id", "topping_id"])
-        .merge()
-        .returning("*");
-    }
-
-    [updatedCartItem] = await this.conn(trx)("cart_items")
-      .where({ id: itemId, cart_id: cartId })
-      .update(dbPayload)
-      .returning("*");
-
-    const updatedCartItemWithToppings = {
-      ...updatedCartItem,
-      toppings: updatedCartItemToppings.map((topping) => ({
-        id: topping.topping_id,
-        quantity: topping.quantity,
-      })),
-    };
-    return CompleteCartItemSchema.parse(
-      camelcaseKeys(updatedCartItemWithToppings, { deep: true }),
-    );
-  };
-
   deleteCart = async (cartId: string, trx?: Knex | Knex.Transaction) => {
     await this.conn(trx)("carts").where({ id: cartId }).del();
+  };
+
+  deleteCartItem = async (itemId: string, trx?: Knex | Knex.Transaction) => {
+    await this.conn(trx)("cart_items").where({ id: itemId }).del();
   };
 }
 

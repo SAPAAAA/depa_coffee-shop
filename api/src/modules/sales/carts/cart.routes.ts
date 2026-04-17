@@ -8,6 +8,7 @@ route.post("/", authMiddleware, checkRole(['customer', 'admin']), cartController
 route.get("/customer", authMiddleware, checkRole(['customer', 'admin']), cartController.getCustomerCompleteCart);
 route.post("/:cartId/items", authMiddleware, checkRole(['customer', 'admin']), cartController.createCartItem);
 route.put("/:cartId/items/:itemId", authMiddleware, checkRole(['customer', 'admin']), cartController.updateCartItem);
+route.delete("/:cartId/items/:itemId", authMiddleware, checkRole(['customer', 'admin']), cartController.deleteCartItem);
 route.put("/:cartId", authMiddleware, checkRole(['customer', 'admin']), cartController.updateCart);
 route.delete("/:cartId", authMiddleware, checkRole(['customer', 'admin']), cartController.deleteCart);
 

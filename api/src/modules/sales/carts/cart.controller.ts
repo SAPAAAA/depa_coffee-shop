@@ -42,7 +42,7 @@ class CartController {
       cartId,
       payload,
     );
-    
+
     return res.status(201).json({ success: true, data: { cart: updatedCart } });
   };
 
@@ -72,7 +72,7 @@ class CartController {
       itemId,
       payload,
     );
-    
+
     return res.status(200).json({ success: true, data: { cart: updatedCart } });
   };
 
@@ -86,11 +86,11 @@ class CartController {
     const payload: UpdateCompleteCartDTO = req.body;
 
     const updatedCart = await this.cartService.updateCart(
-      customerId, 
-      cartId, 
+      customerId,
+      cartId,
       payload,
     );
-    
+
     return res.status(200).json({ success: true, data: { cart: updatedCart } });
   };
 
@@ -103,8 +103,25 @@ class CartController {
     const customerId = req.user.id;
 
     await this.cartService.deleteCart(customerId, cartId);
-    
+
     return res.status(200).json({ success: true });
+  };
+
+  deleteCartItem = async (req: Request, res: Response) => {
+    if (!req.user || Array.isArray(req.user) || !req.user.id) {
+      throw new UnauthorizedError("Failed to remove cart item", "UNAUTHORIZED");
+    }
+
+    const { cartId, itemId } = req.params as { cartId: string; itemId: string };
+    const customerId = req.user.id;
+
+    const updatedCart = await this.cartService.deleteCartItem(
+      customerId,
+      cartId,
+      itemId,
+    );
+
+    return res.status(200).json({ success: true, data: { cart: updatedCart } });
   };
 }
 

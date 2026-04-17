@@ -236,8 +236,13 @@ const CartSidebarProvider = ({
     }
   };
 
-  const removeItem = (itemId: string) =>
+  const removeItem = (itemId: string) => {
     setItems((prev) => prev.filter((item) => item.id !== itemId));
+
+    if (user && cartId) {
+      cartService.removeCartItem(cartId, itemId);
+    }
+  };
 
   const updateQuantity = (itemId: string, quantity: number) => {
     if (!user || !cartId) return;
@@ -307,7 +312,7 @@ const CartSidebarProvider = ({
     updatedFields: Partial<Omit<CartItem, "id">>,
   ) => {
     if (!user || !cartId) return;
-    
+
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === itemId) {
