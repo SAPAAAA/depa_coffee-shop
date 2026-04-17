@@ -14,7 +14,7 @@ class ToppingService {
   };
 
   getToppingById = async (id: string) => {
-    return await this.toppingRepository.getToppingById(id);
+    return await this.toppingRepository.getById(id);
   };
 
   createTopping = async (data: CreateToppingDTO) => {

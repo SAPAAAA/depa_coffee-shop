@@ -37,7 +37,7 @@ class ToppingRepository {
     );
   };
 
-  getToppingById = async (id: string, trx?: Knex | Knex.Transaction): Promise<Topping | null> => {
+  getById = async (id: string, trx?: Knex | Knex.Transaction): Promise<Topping | null> => {
     const topping = await this.conn(trx)("toppings").where({ id }).first();
     if (!topping) {
       return null;
