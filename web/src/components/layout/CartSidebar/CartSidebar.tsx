@@ -123,7 +123,20 @@ const Sidebar = () => {
     [items],
   );
 
-  let clickedItemSelectedOptions = undefined;
+  const clickedItemSelectedOptions = useMemo(() => {
+    if (!clickedItemId) return undefined;
+    
+    const item = items.find((i) => i.id === clickedItemId);
+    if (!item) return undefined;
+
+    return {
+      variantId: item.variant.id,
+      iceLevel: item.iceLevel,
+      sugarLevel: item.sugarLevel,
+      quantity: item.quantity,
+      toppings: item.toppings,
+    };
+  }, [clickedItemId, items]);
 
   const handleDrinkClick = useCallback((itemId: string) => {
     const item = items.find((i) => i.id === itemId);
@@ -132,15 +145,6 @@ const Sidebar = () => {
     const drinkId = item.drink.id;
     const promise = getDrinkCompleteInfo(drinkId);
     setDrinkPromise(promise);
-
-    clickedItemSelectedOptions = items.find((item) => {
-      return {
-        variantId: item.variant.id,
-        iceLevel: item.iceLevel,
-        sugarLevel: item.sugarLevel,
-        toppings: item.toppings
-      };
-    });
     setClickedItemId(itemId);
   }, [items]);
 
