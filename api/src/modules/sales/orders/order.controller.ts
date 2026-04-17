@@ -2,7 +2,9 @@ import type { Request, Response } from "express";
 import type { OrderService } from "./order.service";
 import {
   OrderStatusSchema,
+  type DeliveryMethod,
   type OrderStatus,
+  type PaymentMethod,
 } from "./order.model";
 import {
   BadRequestError,
@@ -75,14 +77,10 @@ class OrderController {
 
     const { id: customerId } = req.user;
 
-    if (req.user.role !== "customer") {
-      throw new UnauthorizedError(
-        "Only customers can create orders",
-        "FORBIDDEN",
-      );
-    }
-
-    const { delivery, paymentMethod } = req.body;
+    const { delivery, paymentMethod } = req.body as {
+      delivery: { method: DeliveryMethod; address?: string };
+      paymentMethod: PaymentMethod;
+    };
 
     const createdOrder = await this.orderService.createOrder(
       customerId,
