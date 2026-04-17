@@ -70,6 +70,9 @@ export type CreateCartItemDTO = z.input<typeof CreateCartItemSchema>;
 export type CreateCompleteCartItemDTO = z.input<
   typeof CreateCompleteCartItemSchema
 >;
+export type UpdateCompleteCartItemDTO = z.input<
+  typeof UpdateCompleteCartItemSchema
+>;
 
 // --- CARTS ---
 export const CartSchema = z.object({
