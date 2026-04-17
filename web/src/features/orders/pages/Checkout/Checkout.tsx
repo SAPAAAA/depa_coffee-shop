@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./Checkout.css";
 import useCartSidebar from "@/hooks/useCartSidebar";
-import { Form, Navigate } from "react-router";
+import { Form, useActionData, useNavigate } from "react-router";
+import type { DeliveryMethod } from "@api-types/sales/orders/order.model";
 
 export { default as clientAction } from "@/features/orders/actions/createOrderAction";
 
@@ -48,22 +49,40 @@ const CheckoutItem = ({
 };
 
 const Checkout = () => {
-  const { items } = useCartSidebar();
-  
+  const { items, resetCart } = useCartSidebar();
+  const { data, success } = useActionData() || {};
+  const order = data?.order;
+  const navigate = useNavigate();
+
   // Local state to track selected delivery method
-  const [deliveryMethod, setDeliveryMethod] = useState("pickup");
+  const [deliveryMethod, setDeliveryMethod] =
+    useState<DeliveryMethod>("pickup");
 
-  if (items.length === 0) {
-    return <Navigate to="/menu" replace />;
-  }
-
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.calculatedPrice,
-    0,
+  const subtotal = items.reduce((sum, item) => sum + item.calculatedPrice, 0);
+  const taxRate = 0.08; // 8% tax
+  const shippingFee = useMemo(
+    () => (deliveryMethod === "delivery" ? 15 : 0),
+    [deliveryMethod],
   );
-  const tax = subtotal * 0.08;
-  const shipping = 15;
-  const total = subtotal + tax + shipping;
+  const total = useMemo(
+    () =>
+      subtotal * (1 + taxRate) +
+      (deliveryMethod === "delivery" ? shippingFee : 0),
+    [subtotal, deliveryMethod],
+  );
+
+  useEffect(() => {
+    if (success && order) {
+      resetCart();
+      navigate(`/orders/confirmation/${order.id}`, { replace: true });
+    }
+  }, [success, order, navigate]);
+
+  useEffect(() => {
+    if (items.length === 0 && !success) {
+      navigate("/menu", { replace: true });
+    }
+  }, [items, success]);
 
   return (
     <div className="checkout-page">
@@ -272,13 +291,13 @@ const Checkout = () => {
               <div className="checkout-summary-row">
                 <span>Tax (8%)</span>
                 <span className="font-medium text-default-font">
-                  ${tax.toFixed(2)}
+                  ${(subtotal * taxRate).toFixed(2)}
                 </span>
               </div>
               <div className="checkout-summary-row">
                 <span>Shipping</span>
                 <span className="font-medium text-default-font">
-                  ${shipping.toFixed(2)}
+                  ${shippingFee.toFixed(2)}
                 </span>
               </div>
 
