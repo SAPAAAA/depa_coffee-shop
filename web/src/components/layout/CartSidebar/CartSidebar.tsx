@@ -180,6 +180,7 @@ const Sidebar = () => {
 
   const handleOnCheckout = useCallback(() => {
     handleOnCloseModal();
+    closeSidebar();
     navigate("/checkout");
   }, [items, navigate]);
 
