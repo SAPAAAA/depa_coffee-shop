@@ -2,7 +2,6 @@
 import {
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
   useCallback,
@@ -14,6 +13,7 @@ import cartService from "@/services/cart";
 import drinkService from "@/services/drink";
 import toppingsService from "@/services/topping";
 import useDebounce from "@/hooks/useDebounce";
+import type { UpdateCompleteCartItemDTO } from "@api-types/sales/carts/cart.model";
 
 const CartSidebarProvider = ({
   children,
@@ -36,7 +36,6 @@ const CartSidebarProvider = ({
   });
 
   const { user } = useAuth();
-  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const calculateItemPrice = useCallback(
     (item: Pick<CartItem, "variant" | "quantity" | "toppings">): number => {

@@ -4,25 +4,37 @@ import type {
   CompleteCartItem, 
   CreateCompleteCartDTO, 
   CreateCompleteCartItemDTO,
-  UpdateCompleteCartDTO
+  UpdateCompleteCartDTO,
+  UpdateCompleteCartItemDTO,
 } from "@api-types/sales/carts/cart.model";
 
 class CartService {
   getCart = async () => {
-    const response = await httpClient.get<{ cart: CompleteCart }>("/api/carts/customer");
+    const response = await httpClient.get<{ cart: CompleteCart }>(
+      "/api/carts/customer",
+    );
     return response.cart;
   };
 
   saveCart = async (payload: CreateCompleteCartDTO) => {
     console.log("Saving cart with payload:", payload);
-    const response = await httpClient.post<{ cart: CompleteCart }>("/api/carts", payload);
+    const response = await httpClient.post<{ cart: CompleteCart }>(
+      "/api/carts",
+      payload,
+    );
     return response.cart;
   };
 
-  saveCartItem = async (cartId: string, payload?: CreateCompleteCartItemDTO) => {
-    const response = await httpClient.post<{ cart: CompleteCartItem }>(`/api/carts/${cartId}/items`, payload);
+  saveCartItem = async (
+    cartId: string,
+    payload?: CreateCompleteCartItemDTO,
+  ) => {
+    const response = await httpClient.post<{ cart: CompleteCartItem }>(
+      `/api/carts/${cartId}/items`,
+      payload,
+    );
     return response.cart;
-  }
+  };
 
   updateCartItem = async (
     cartId: string, 
@@ -37,12 +49,17 @@ class CartService {
   };
 
   updateCart = async (cartId: string, payload: UpdateCompleteCartDTO) => {
-    const response = await httpClient.put<{ cart: CompleteCart }>(`/api/carts/${cartId}`, payload);
+    const response = await httpClient.put<{ cart: CompleteCart }>(
+      `/api/carts/${cartId}`,
+      payload,
+    );
     return response.cart;
   };
 
   deleteCart = async (cartId: string) => {
-    const response = await httpClient.delete<{ success: boolean }>(`/api/carts/${cartId}`);
+    const response = await httpClient.delete<{ success: boolean }>(
+      `/api/carts/${cartId}`,
+    );
     return response;
   };
 }
