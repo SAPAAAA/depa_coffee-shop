@@ -68,6 +68,49 @@ class CartService {
         throw new ForbiddenError("Failed to add item to cart", "FORBIDDEN");
       }
 
+      const variant = await this.drinkVariantRepository.getById(
+        payload.drinkVariantId,
+        trx,
+      );
+      if (!variant) {
+        throw new NotFoundError("Drink variant not found", "OBJECT_NOT_FOUND");
+      }
+
+      if (variant.stockQuantity < (payload.quantity ?? 1)) {
+        throw new ForbiddenError(
+          "Insufficient stock for the selected drink variant",
+          "FORBIDDEN",
+        );
+      }
+
+      // Validate toppings if provided
+      const toppingsPromise = Promise.all(
+        (payload.toppings ?? []).map(async (t) => {
+          const topping = await this.toppingRepository.getById(t.id, trx);
+          if (!topping) {
+            throw new NotFoundError(
+              `Topping variant with ID ${t.id} not found`,
+              "OBJECT_NOT_FOUND",
+            );
+          }
+
+          if (topping.stockQuantity < (t.quantity ?? 1)) {
+            throw new ForbiddenError(
+              `Insufficient stock for the selected topping ${topping.name}`,
+              "FORBIDDEN",
+            );
+          }
+
+          return {
+            ...t,
+            topping,
+          };
+        }),
+      );
+
+      await toppingsPromise;
+
+      // All validations passed, create the cart item
       const createdCartItem = await this.cartRepository.createCartItem(
         cartId,
         payload,
@@ -86,7 +129,7 @@ class CartService {
     customerId: string,
     cartId: string,
     itemId: string,
-    payload: Partial<CreateCompleteCartItemDTO>,
+    payload: UpdateCompleteCartItemDTO,
   ) => {
     // Verify ownership
     return await db.transaction(async (trx) => {
