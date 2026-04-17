@@ -29,18 +29,22 @@ const CartSidebarItem = ({
   return (
     <div className="cart-item">
       <div className="cart-item-layout">
-        <div className="cart-item-image-container">
+        <button
+          className="cart-item-image-container"
+          onClick={() => onDrinkClick(item.id)}
+          aria-label={`View details for ${item.drink.name}`}
+        >
           <img
             src={item.drink.imageUrl || "https://via.placeholder.com/80"}
             alt={item.drink.name}
             className="cart-item-image"
           />
-        </div>
+        </button>
 
         <div className="cart-item-content">
           <h3 className="cart-item-name">{item.drink.name}</h3>
 
-          <div className="cart-item-body" onClick={() => onDrinkClick(item.id)}>
+          <div className="cart-item-body">
             {/* Left Side: Specs */}
             <div className="cart-item-specs">
               <p className="cart-item-spec-text">{variant.name}</p>
@@ -61,7 +65,10 @@ const CartSidebarItem = ({
                   type="button"
                   className="quantity-btn"
                   aria-label="Decrease quantity"
-                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    updateQuantity(item.id, item.quantity - 1);
+                  }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +98,10 @@ const CartSidebarItem = ({
                   className="quantity-btn"
                   aria-label="Increase quantity"
                   disabled={item.quantity >= variant.stockQuantity}
-                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    updateQuantity(item.id, item.quantity + 1);
+                  }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -169,8 +179,9 @@ const Sidebar = () => {
   };
 
   const handleOnCheckout = useCallback(() => {
+    handleOnCloseModal();
     navigate("/checkout");
-  }, []);
+  }, [items, navigate]);
 
   return (
     <>
