@@ -13,6 +13,7 @@ import useAuth from "@/hooks/useAuth";
 import cartService from "@/services/cart";
 import drinkService from "@/services/drink";
 import toppingsService from "@/services/topping";
+import useDebounce from "@/hooks/useDebounce";
 
 const CartSidebarProvider = ({
   children,
@@ -109,50 +110,67 @@ const CartSidebarProvider = ({
     fetchExistingCart();
   }, [user, calculateItemPrice]);
 
-  // Save to db
-  useEffect(() => {
-    if (syncTimeoutRef.current) {
-      clearTimeout(syncTimeoutRef.current);
-    }
-
-    if (user && (cartId || items.length > 0)) {
-      syncTimeoutRef.current = setTimeout(async () => {
+  const debouncedUpdateCart = useDebounce(
+    useCallback(
+      async (itemId: string, newQty: number) => {
+        if (!user || !cartId) return;
         try {
-          const payload = {
-            id: cartId,
-            customerId: user.id,
-            items: items.map((item) => ({
-              id: item.id,
-              cartId: cartId,
-              drinkVariantId: item.variant.id,
-              sugarLevel: item.sugarLevel,
-              iceLevel: item.iceLevel,
-              quantity: item.quantity,
-              toppings: item.toppings.map((toppingWithQuantity) => ({
-                id: toppingWithQuantity.topping.id,
-                quantity: toppingWithQuantity.quantity,
-              })),
-            })),
-          };
-
-          if (cartId) {
-            await cartService.updateCart(cartId, payload);
-          } else {
-            const createdCart = await cartService.saveCart(payload);
-            setCartId(createdCart.id);
-          }
+          await cartService.updateCartItem(cartId, itemId, {
+            quantity: newQty,
+          });
         } catch (error) {
-          console.error("Failed to sync cart with server:", error);
+          console.error("Failed to sync updated quantity with server:", error);
         }
-      }, 2500);
-    }
+      },
+      [user, cartId],
+    ),
+    300,
+  );
 
-    return () => {
-      if (syncTimeoutRef.current) {
-        clearTimeout(syncTimeoutRef.current);
-      }
-    };
-  }, [user, items, cartId]);
+  // Save to db
+  // useEffect(() => {
+  //   if (syncTimeoutRef.current) {
+  //     clearTimeout(syncTimeoutRef.current);
+  //   }
+
+  //   if (user && (cartId || items.length > 0)) {
+  //     syncTimeoutRef.current = setTimeout(async () => {
+  //       try {
+  //         const payload = {
+  //           id: cartId,
+  //           customerId: user.id,
+  //           items: items.map((item) => ({
+  //             id: item.id,
+  //             cartId: cartId,
+  //             drinkVariantId: item.variant.id,
+  //             sugarLevel: item.sugarLevel,
+  //             iceLevel: item.iceLevel,
+  //             quantity: item.quantity,
+  //             toppings: item.toppings.map((toppingWithQuantity) => ({
+  //               id: toppingWithQuantity.topping.id,
+  //               quantity: toppingWithQuantity.quantity,
+  //             })),
+  //           })),
+  //         };
+
+  //         if (cartId) {
+  //           await cartService.updateCart(cartId, payload);
+  //         } else {
+  //           const createdCart = await cartService.saveCart(payload);
+  //           setCartId(createdCart.id);
+  //         }
+  //       } catch (error) {
+  //         console.error("Failed to sync cart with server:", error);
+  //       }
+  //     }, 2500);
+  //   }
+
+  //   return () => {
+  //     if (syncTimeoutRef.current) {
+  //       clearTimeout(syncTimeoutRef.current);
+  //     }
+  //   };
+  // }, [user, items, cartId]);
 
   const openSidebar = () => setIsOpen(true);
   const closeSidebar = () => setIsOpen(false);
@@ -235,6 +253,10 @@ const CartSidebarProvider = ({
         if (item.id === itemId) {
           const validQuantity = Math.min(quantity, item.variant.stockQuantity);
           const updatedItem = { ...item, quantity: validQuantity };
+
+          // Update the server with the new quantity, debounced to avoid excessive calls
+          debouncedUpdateCart(itemId, validQuantity);
+
           return {
             ...updatedItem,
             calculatedPrice: calculateItemPrice(updatedItem),
@@ -272,7 +294,9 @@ const CartSidebarProvider = ({
   const updateItem = (
     itemId: string,
     updatedFields: Partial<Omit<CartItem, "id">>,
-  ) =>
+  ) => {
+    if (!user || !cartId) return;
+    
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === itemId) {
@@ -286,6 +310,19 @@ const CartSidebarProvider = ({
             quantity: Math.max(1, Math.min(stockQuantity, quantity)),
           };
 
+          const payload = {
+            drinkVariantId: updatedItem.variant.id,
+            sugarLevel: updatedItem.sugarLevel,
+            iceLevel: updatedItem.iceLevel,
+            quantity: updatedItem.quantity,
+            toppings: updatedItem.toppings.map((toppingWithQuantity) => ({
+              id: toppingWithQuantity.topping.id,
+              quantity: toppingWithQuantity.quantity,
+            })),
+          }
+
+          cartService.updateCartItem(cartId, itemId, payload);
+
           return {
             ...updatedItem,
             calculatedPrice: calculateItemPrice(updatedItem),
@@ -294,6 +331,7 @@ const CartSidebarProvider = ({
         return item;
       }),
     );
+  };
 
   const values = useMemo(
     () => ({

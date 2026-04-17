@@ -1,12 +1,22 @@
 import "./ViewDrinkModal.css";
-import { Suspense, use, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
 import type { DrinkCompleteInfo } from "@/services/drink";
 import type { IceLevel, SugarLevel } from "@api-types/sales/orders/order.model";
-import useCartSidebar from "@/hooks/useCartSidebar";
+import type { CartItem } from "@/contexts/CartSidebarContext";
+import type { Drink } from "@api-types/catalog/drinks/drink.model";
+import useAuth from "@/hooks/useAuth";
+import { useNavigate } from "react-router";
 
 interface ViewDrinkModalProps {
   drinkPromise: Promise<DrinkCompleteInfo>;
   onClose: () => void;
+  preSelectedOptions?: {
+    variantId: string;
+    iceLevel: IceLevel;
+    sugarLevel: SugarLevel;
+    quantity: number;
+  };
+  onAddToCart: (item: Omit<CartItem, "id" | "calculatedPrice">) => void;
 }
 
 const ICE_LEVEL_OPTIONS: { value: IceLevel; label: string }[] = [
@@ -27,48 +37,56 @@ const SUGAR_LEVEL_OPTIONS: { value: SugarLevel; label: string }[] = [
 const DrinkDetails = ({
   drinkPromise,
   onClose,
-}: {
-  drinkPromise: Promise<DrinkCompleteInfo>;
-  onClose: () => void;
-}) => {
+  preSelectedOptions,
+  onAddToCart,
+}: ViewDrinkModalProps) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const drink = use(drinkPromise);
-  const { addItem } = useCartSidebar();
 
-  const variantOptions = drink.variants.sort((a, b) => a.price - b.price);
-  const [selectedVariantId, setSelectedVariantId] = useState<string>(
-    variantOptions.find((variant) => variant.isDefault)!.id,
+  const variantOptions = drink.variants.toSorted(
+    (a, b) => a.volumeMl - b.volumeMl,
   );
-  const [selectedIceLevel, setSelectedIceLevel] =
-    useState<IceLevel>("normal_ice");
-  const [selectedSugarLevel, setSelectedSugarLevel] =
-    useState<SugarLevel>("100%");
-  const [quantity, setQuantity] = useState(1);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+    preSelectedOptions?.variantId ||
+      variantOptions.find((variant) => variant.isDefault)?.id ||
+      variantOptions[0]?.id ||
+      null,
+  );
+  const [selectedIceLevel, setSelectedIceLevel] = useState<IceLevel>(
+    preSelectedOptions?.iceLevel || "normal_ice",
+  );
+  const [selectedSugarLevel, setSelectedSugarLevel] = useState<SugarLevel>(
+    preSelectedOptions?.sugarLevel || "100%",
+  );
+  const [quantity, setQuantity] = useState(preSelectedOptions?.quantity || 1);
 
   const selectedVariant = variantOptions.find(
     (variant) => variant.id === selectedVariantId,
-  )!;
+  );
 
-  const totalPrice = selectedVariant.price * quantity;
+  const totalPrice = selectedVariant?.price
+    ? selectedVariant.price * quantity
+    : 0;
 
-  const addToCart = useCallback(() => {
-    const item = {
+  const item = useMemo(() => {
+    if (!selectedVariant) return null;
+
+    return {
       drink: {
         id: drink.id,
         name: drink.name,
-        description: drink.description,
         imageUrl: drink.imageUrl,
         categoryId: drink.category.id,
-      },
+        description: drink.description,
+      } as Drink,
       variant: selectedVariant,
       sugarLevel: selectedSugarLevel,
       iceLevel: selectedIceLevel,
       quantity,
       toppings: [],
     };
-
-    addItem(item);
-    onClose();
-  }, [selectedVariant, quantity]);
+  }, [drink, selectedVariant, selectedSugarLevel, selectedIceLevel, quantity]);
 
   return (
     <>
@@ -210,7 +228,7 @@ const DrinkDetails = ({
                         setQuantity(
                           Math.min(
                             Math.max(1, val),
-                            selectedVariant.stockQuantity,
+                            selectedVariant?.stockQuantity || 0,
                           ),
                         );
                       }
@@ -220,10 +238,10 @@ const DrinkDetails = ({
                     type="button"
                     className="quantity-btn"
                     aria-label="Increase quantity"
-                    disabled={quantity >= selectedVariant.stockQuantity}
+                    disabled={quantity >= (selectedVariant?.stockQuantity || 0)}
                     onClick={() =>
                       setQuantity((prev) =>
-                        Math.min(selectedVariant.stockQuantity, prev + 1),
+                        Math.min(selectedVariant?.stockQuantity || 0, prev + 1),
                       )
                     }
                   >
@@ -248,8 +266,34 @@ const DrinkDetails = ({
             <span>Total:</span>
             <output>${totalPrice.toFixed(2)}</output>
           </div>
-          <button type="submit" className="add-to-cart-btn" onClick={addToCart}>
-            Add to Basket
+          <button
+            type="submit"
+            className="add-to-cart-btn"
+            onClick={() => {
+              if (user) {
+                if (item) {
+                  onAddToCart(item);
+                  onClose();
+                }
+              } else {
+                navigate("/login", {
+                  state: {
+                    from: location.pathname,
+                    preSelectedOptions: {
+                      drinkId: drink.id,
+                      variantId: selectedVariantId,
+                      iceLevel: selectedIceLevel,
+                      sugarLevel: selectedSugarLevel,
+                      quantity,
+                      toppings: [],
+                    },
+                  },
+                });
+              }
+            }}
+            disabled={!selectedVariant || selectedVariant.stockQuantity === 0}
+          >
+            {preSelectedOptions ? "Update Cart" : "Add to Cart"}
           </button>
         </footer>
       </dialog>
@@ -257,7 +301,12 @@ const DrinkDetails = ({
   );
 };
 
-const ViewDrinkModal = ({ drinkPromise, onClose }: ViewDrinkModalProps) => {
+const ViewDrinkModal = ({
+  drinkPromise,
+  onClose,
+  preSelectedOptions,
+  onAddToCart,
+}: ViewDrinkModalProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -281,7 +330,12 @@ const ViewDrinkModal = ({ drinkPromise, onClose }: ViewDrinkModalProps) => {
     <Suspense
       fallback={<div className="modal-loading-state">Loading details...</div>}
     >
-      <DrinkDetails drinkPromise={drinkPromise} onClose={onClose} />
+      <DrinkDetails
+        drinkPromise={drinkPromise}
+        onClose={onClose}
+        preSelectedOptions={preSelectedOptions}
+        onAddToCart={onAddToCart}
+      />
     </Suspense>
   );
 };

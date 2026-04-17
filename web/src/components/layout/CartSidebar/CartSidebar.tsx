@@ -1,21 +1,20 @@
 import useCartSidebar from "@/hooks/useCartSidebar";
-import { useMemo, type CSSProperties } from "react";
+import { useCallback, useMemo, useState, type CSSProperties } from "react";
 import type { CartItem } from "@/contexts/CartSidebarContext";
 import "./CartSidebar.css";
+import ViewDrinkModal from "@/features/drinks/components/ViewDrinkModal";
+import { getDrinkCompleteInfo, type DrinkCompleteInfo } from "@/services/drink";
 
 interface CartItemProps {
   item: CartItem;
   updateQuantity: (itemId: string, quantity: number) => void;
-  updateItem: (
-    itemId: string,
-    updatedFields: Partial<Omit<CartItem, "id">>,
-  ) => void;
+  onItemClick: (itemId: string) => void;
 }
 
 const CartSidebarItem = ({
   item,
   updateQuantity,
-  updateItem,
+  onItemClick: onDrinkClick,
 }: CartItemProps) => {
   const variant = item.variant;
 
@@ -40,7 +39,7 @@ const CartSidebarItem = ({
         <div className="cart-item-content">
           <h3 className="cart-item-name">{item.drink.name}</h3>
 
-          <div className="cart-item-body">
+          <div className="cart-item-body" onClick={() => onDrinkClick(item.id)}>
             {/* Left Side: Specs */}
             <div className="cart-item-specs">
               <p className="cart-item-spec-text">{variant.name}</p>
@@ -113,13 +112,51 @@ const CartSidebarItem = ({
 };
 
 const Sidebar = () => {
-  const { isOpen, closeSidebar, items, updateItem, updateQuantity } =
+  const { isOpen, closeSidebar, items, updateQuantity, updateItem } =
     useCartSidebar();
+  const [drinkPromise, setDrinkPromise] =
+    useState<Promise<DrinkCompleteInfo> | null>(null);
+  const [clickedItemId, setClickedItemId] = useState<string | null>(null);
 
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.calculatedPrice, 0),
     [items],
   );
+
+  let clickedItemSelectedOptions = undefined;
+
+  const handleDrinkClick = useCallback((itemId: string) => {
+    const item = items.find((i) => i.id === itemId);
+    if (!item) return;
+
+    const drinkId = item.drink.id;
+    const promise = getDrinkCompleteInfo(drinkId);
+    setDrinkPromise(promise);
+
+    clickedItemSelectedOptions = items.find((item) => {
+      return {
+        variantId: item.variant.id,
+        iceLevel: item.iceLevel,
+        sugarLevel: item.sugarLevel,
+        toppings: item.toppings
+      };
+    });
+    setClickedItemId(itemId);
+  }, [items]);
+
+  const handleOnCloseModal = useCallback(() => {
+    setDrinkPromise(null);
+    setClickedItemId(null);
+  }, []);
+
+  const handleOnUpdateCartItem = (
+    item: Omit<CartItem, "id" | "calculatedPrice">,
+  ) => {
+    if (clickedItemId) {
+      updateItem(clickedItemId, item);
+      handleOnCloseModal();
+    }
+  };
 
   return (
     <>
@@ -160,7 +197,7 @@ const Sidebar = () => {
                 key={item.id}
                 item={item}
                 updateQuantity={updateQuantity}
-                updateItem={updateItem}
+                onItemClick={handleDrinkClick}
               />
             ))
           )}
@@ -176,6 +213,14 @@ const Sidebar = () => {
           </button>
         </footer>
       </aside>
+      {drinkPromise && (
+        <ViewDrinkModal
+          drinkPromise={drinkPromise}
+          onClose={() => setDrinkPromise(null)}
+          preSelectedOptions={clickedItemSelectedOptions}
+          onAddToCart={handleOnUpdateCartItem}
+        />
+      )}
     </>
   );
 };
