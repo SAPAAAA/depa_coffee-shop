@@ -1,25 +1,28 @@
 import { useEffect } from "react";
 import { Form, useActionData, useNavigate, useNavigation } from "react-router";
 import "./Login.css";
+import useAuth from "@/hooks/useAuth";
 
 export { default as clientAction } from "@/features/auth/actions/loginAction";
 
 const Login = () => {
-  const { success, error } = useActionData() || {};
+  const { success, error, data } = useActionData() || {};
   const navigation = useNavigation();
   const navigate = useNavigate();
-
   const isPending = navigation.state === "submitting";
+  const { setUser } = useAuth();
 
   useEffect(() => {
-    if (success) {
+    if (success && data.user) {
+      setUser(data.user);
+      
       const timer = setTimeout(() => {
         navigate("/");
       }, 1500);
 
       return () => clearTimeout(timer);
     }
-  }, [success, navigate]);
+  }, [success, data, setUser, navigate]);
 
   return (
     <div className="login-form-container">

@@ -14,7 +14,7 @@
   }
 
   .carousel-ctrl-overlay {
-    @apply absolute top-0 left-0 w-32 h-full flex items-center justify-between pointer-events-auto;
+    @apply absolute top-0 left-0 w-32 h-full flex items-center justify-between pointer-events-none;
   }
 
   .carousel-ctrl-overlay.carousel-ctrl-overlay-left {
@@ -26,11 +26,11 @@
   }
 
   .carousel-btn {
-    @apply relative h-full w-full cursor-pointer;
+    @apply relative h-full w-full cursor-pointer pointer-events-auto;
   }
 
   .carousel-btn:disabled {
-    @apply cursor-default;
+    @apply cursor-default pointer-events-none;
   }
 
   .carousel-btn-icon {
@@ -65,10 +65,14 @@
   }
 
   .carousel-item {
-    @apply shrink-0 flex flex-col bg-white rounded-DEFAULT shadow-sm;
+    @apply shrink-0 flex flex-col bg-white rounded-DEFAULT shadow-sm text-left p-0 border-0 cursor-pointer overflow-hidden;
     width: calc(
       (100% - (1rem * (var(--max-visible) - 1))) / var(--max-visible)
     );
+  }
+
+  .carousel-item:focus-visible {
+    @apply outline-none ring-2 ring-brand-primary ring-offset-2;
   }
 
   .carousel-item .item-image {

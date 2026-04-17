@@ -5,6 +5,7 @@ export type User = Customer;
 
 export interface AuthContextValues {
   user: User | null;
+  setUser: (user: User | null) => void;
   login: (username: string, password: string, role: string) => Promise<void>;
   logout: () => void;
 }

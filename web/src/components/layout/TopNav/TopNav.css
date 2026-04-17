@@ -2,7 +2,7 @@
 
 @layer components {
   .nav {
-    @apply h-full bg-transparent flex flex-row items-center justify-end-safe gap-8;
+    @apply h-full bg-transparent flex flex-row items-center justify-end-safe;
   }
 
   .nav-list {
@@ -23,5 +23,47 @@
 
   .nav-link.active {
     @apply bg-black text-white font-body-bold;
+  }
+
+  .nav-cart {
+    @apply relative h-full pointer-events-auto;
+  }
+
+  .cart-button {
+    @apply h-full w-full px-3 bg-transparent text-default-font transition-colors duration-300 cursor-pointer;
+  }
+
+  /* --- New User/Login Styles --- */
+  
+  .nav-user {
+    @apply relative h-full flex items-center px-4 border-l border-neutral-200 ml-2;
+  }
+
+  .login-link {
+    @apply text-body font-body-bold text-default-font hover:text-brand-600 transition-colors;
+  }
+
+  .user-menu-container {
+    @apply relative h-full flex items-center;
+  }
+
+  .user-icon-btn {
+    @apply flex items-center justify-center p-2 rounded-full text-default-font hover:bg-neutral-200 transition-colors cursor-pointer border-none bg-transparent;
+  }
+
+  .user-dropdown {
+    @apply absolute top-full right-0 mt-2 w-48 bg-white border border-neutral-200 rounded-md shadow-lg py-1 z-50 flex flex-col;
+  }
+
+  .user-dropdown-header {
+    @apply px-4 py-2 border-b border-neutral-100 mb-1;
+  }
+
+  .user-dropdown-name {
+    @apply text-sm font-bold text-default-font truncate block;
+  }
+
+  .user-dropdown-item {
+    @apply w-full text-left px-4 py-2 text-sm text-error-600 hover:bg-neutral-50 transition-colors cursor-pointer bg-transparent border-none;
   }
 }

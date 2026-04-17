@@ -8,9 +8,9 @@ export const loginAction = async ({ request }: Readonly<Route.ActionArgs>) => {
     const password = formData.get("password") as string;
     const role = formData.get("role") as string;
 
-    await login(username, password, role);
+    const user = await login(username, password, role); 
 
-    return { success: true };
+    return { success: true, data: { user } };
   } catch (error: any) {
     return { success: false, error: error.message || "Login failed" };
   }

@@ -111,6 +111,28 @@ class AuthService {
     };
   };
 
+  getMe = async (userId: string, role: string) => {
+    let user;
+
+    if (role === "customer") {
+      user = await this.customerRepository.getById(userId);
+    } else if (role === "staff") {
+      user = await this.staffRepository.getById(userId);
+    } else {
+      throw new NotFoundError("User not found", "OBJECT_NOT_FOUND");
+    }
+
+    if (!user) {
+      throw new NotFoundError("User not found", "OBJECT_NOT_FOUND");
+    }
+
+    const userResponse = role === "customer" 
+      ? CustomerResponseSchema.parse(user) 
+      : { id: user.id, username: user.username, role }; // TODO: Remember to replace this with proper staff response schema
+
+    return userResponse;
+  }
+
   logout = async (refreshToken: string) => {
     // TODO: Implement token blacklisting to invalidate the refresh token
     return;

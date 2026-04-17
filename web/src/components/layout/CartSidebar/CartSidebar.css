@@ -1,0 +1,107 @@
+@import "@/global.css";
+
+@layer components {
+  .cart-drawer-backdrop {
+    @apply fixed inset-0 bg-neutral-900/40 backdrop-blur-sm z-40 transition-opacity;
+  }
+
+  .cart-item {
+    @apply flex flex-col gap-3 py-5 border-b border-neutral-200 last:border-b-0;
+  }
+
+  .cart-item-layout {
+    @apply flex flex-row gap-4 w-full;
+  }
+
+  .cart-item-image-container {
+    @apply w-20 h-20 shrink-0 rounded-md overflow-hidden bg-white border border-neutral-100;
+  }
+
+  .cart-item-image {
+    @apply w-full h-full object-cover;
+  }
+
+  .cart-item-content {
+    @apply flex flex-col flex-1 w-full;
+  }
+
+  .cart-item-name {
+    @apply text-body-bold text-default-font line-clamp-2;
+  }
+
+  .cart-item-body {
+    @apply flex flex-row justify-between items-end mt-2;
+  }
+
+  .cart-item-specs {
+    @apply flex flex-col gap-0.5;
+  }
+
+  .cart-item-spec-text {
+    @apply text-caption text-subtext-color m-0;
+  }
+
+  .cart-item-actions {
+    @apply flex flex-col items-end gap-2;
+  }
+
+  .cart-item-price {
+    @apply text-body-bold text-brand-600 m-0;
+  }
+
+  .cart-item-quantity-controls {
+    @apply flex items-center gap-1 bg-white border border-neutral-200 rounded-full w-fit px-1.5 py-1;
+  }
+
+  .cart-item-quantity-controls .quantity-btn {
+    @apply p-1 rounded-full text-neutral-600 transition-colors disabled:opacity-50 not-disabled:hover:bg-neutral-100 not-disabled:hover:text-brand-600 active:scale-95;
+  }
+
+  .cart-item-quantity-controls .quantity-display {
+    @apply text-caption-bold text-default-font w-6 text-center focus:outline-none bg-transparent p-0;
+  }
+
+  .cart-drawer {
+    @apply fixed top-0 right-0 w-full sm:w-96 h-full bg-white shadow-lg z-50 flex flex-col transition-transform duration-300 transform rounded-l-2xl;
+  }
+
+  .cart-drawer-header {
+    @apply flex items-center justify-between p-6 border-b border-neutral-100;
+  }
+
+  .cart-drawer-title {
+    @apply text-heading-2 font-bold text-default-font;
+  }
+
+  .cart-drawer-close-btn {
+    @apply p-2 rounded-full text-neutral-400 hover:bg-neutral-100 hover:text-neutral-800 transition-all duration-200 active:scale-95;
+  }
+
+  .cart-drawer-content {
+    @apply flex-1 overflow-y-auto p-6 bg-neutral-50/50;
+  }
+
+  .cart-drawer-footer {
+    @apply relative flex flex-row w-full items-center justify-between p-6 border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)];
+  }
+
+  .cart-subtotal {
+    @apply text-lg font-bold text-default-font pl-4;
+  }
+
+  .subtotal-label {
+    @apply text-body text-neutral-600;
+  }
+
+  .subtotal-value {
+    @apply text-body font-body text-default-font ml-2;
+  }
+
+  .checkout-button {
+    @apply px-6 py-3 bg-brand-600 text-white font-medium text-body rounded-full shadow-md transition-all duration-300 hover:bg-brand-700 hover:shadow-lg active:scale-95;
+  }
+
+  .checkout-button:hover {
+    @apply bg-brand-700;
+  }
+}

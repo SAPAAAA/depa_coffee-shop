@@ -34,12 +34,12 @@ VALUES
 ('018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Iced Latte', 'Espresso with chilled milk', '018e9f2b-7c1a-7b3a-9e1d-7a1b2c3d4e03', '/images/drinks/iced-latte.jpg');
 
 -- DRINK VARIANTS
-INSERT INTO drink_variants (id, drink_id, name, volume_ml, price, is_default)
+INSERT INTO drink_variants (id, drink_id, name, volume_ml, price, stock_quantity, is_default)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Regular', 500, 4.50, TRUE),
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Large', 700, 5.50, FALSE),
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Standard', 500, 5.00, TRUE),
-('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e04', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Tall', 350, 4.25, TRUE);
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Regular', 500, 4.50, 100, TRUE),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e01', 'Large', 700, 5.50, 80, FALSE),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e02', 'Standard', 500, 5.00, 150, TRUE),
+('018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e04', '018e9f2b-7c1a-7b3a-9e1d-9a1b2c3d4e03', 'Tall', 350, 4.25, 200, TRUE);
 
 -- ORDERS
 INSERT INTO orders (id, customer_id, status, total_amount, payment_method, delivery_method, shipping_fee, delivery_address)
@@ -54,10 +54,10 @@ VALUES
 ('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-1c1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', 1, '100%', 'no_ice', 5.50);
 
 -- ORDER ITEM TOPPINGS
-INSERT INTO order_item_toppings (order_item_id, topping_id)
+INSERT INTO order_item_toppings (order_item_id, topping_id, quantity)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01'),
-('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03');
+('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01', 1),
+('018e9f2b-7c1a-7b3a-9e1d-2d1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03', 1);
 
 -- CARTS
 INSERT INTO carts (id, customer_id, created_at, updated_at)
@@ -72,10 +72,9 @@ VALUES
 ('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-3e1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e03', 2, '75%', 'normal_ice', 10.00),
 ('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-3e1b2c3d4e02', '018e9f2b-7c1a-7b3a-9e1d-0b1b2c3d4e02', 1, '100%', 'extra_ice', 6.10);
 
-
 -- CART ITEM TOPPINGS
-INSERT INTO cart_item_toppings (cart_item_id, topping_id)
+INSERT INTO cart_item_toppings (cart_item_id, topping_id, quantity)
 VALUES 
-('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01'), 
-('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03'), 
-('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e04');
+('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e01', 1), 
+('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e01', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e03', 1), 
+('018e9f2b-7c1a-7b3a-9e1d-4f1b2c3d4e03', '018e9f2b-7c1a-7b3a-9e1d-8a1b2c3d4e04', 1);

@@ -1,0 +1,170 @@
+@import "@/global.css";
+
+@layer components {
+  .modal-backdrop {
+    @apply fixed inset-0 bg-neutral-900/40 backdrop-blur-sm z-40 transition-opacity
+  }
+
+  .modal {
+    @apply fixed top-1/2 left-1/2 sm:max-w-2xl h-auto bg-white shadow-lg z-50 flex flex-col transition-transform duration-300 transform -translate-x-1/2 -translate-y-1/2 rounded-lg;
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between p-6 border-b border-neutral-100;
+  }
+
+  .modal-title {
+    @apply text-heading-2 font-bold text-default-font;
+  }
+
+  .modal-close-btn {
+    @apply p-2 rounded-full text-neutral-400 hover:bg-neutral-100 hover:text-neutral-800 transition-all duration-200 active:scale-95;
+  }
+
+  .modal-content {
+    @apply flex flex-col p-6 bg-neutral-50/50;
+  }
+
+  .drink-view-layout {
+    @apply flex flex-col lg:flex-row gap-8;
+  }
+
+  .drink-view-image-container {
+    @apply w-full lg:w-1/2 lg:aspect-2/1 rounded-lg overflow-hidden border border-neutral-200 bg-white;
+  }
+
+  .drink-view-image {
+    @apply w-full h-full object-cover;
+  }
+
+  .drink-view-info-container {
+    @apply flex flex-col gap-6;
+  }
+
+  .drink-view-description {
+    @apply text-body text-subtext-color leading-relaxed;
+  }
+
+  .variants-section {
+    @apply flex flex-col gap-3;
+  }
+
+  .variants-label {
+    @apply text-caption-bold text-neutral-500 uppercase tracking-wider;
+  }
+
+  .variants-options-list {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .variant-option-btn {
+    @apply px-4 py-2 text-sm font-medium border border-neutral-300 rounded-full bg-white text-default-font hover:border-brand-500 hover:text-brand-600 transition-colors;
+  }
+
+  .ice-level-section {
+    @apply flex flex-col gap-3;
+  }
+
+  .ice-level-label {
+    @apply text-caption-bold text-neutral-500 uppercase tracking-wider;
+  }
+
+  .ice-level-options {
+    @apply flex gap-4 flex-wrap;
+  }
+
+  .ice-radio-label {
+    @apply flex items-center gap-2 cursor-pointer text-default-font;
+  }
+
+  .ice-radio-text {
+    @apply text-sm whitespace-nowrap;
+  }
+
+  .sugar-level-section {
+    @apply flex flex-col gap-3;
+  }
+
+  .sugar-level-label {
+    @apply text-caption-bold text-neutral-500 uppercase tracking-wider;
+  }
+
+  .sugar-level-options {
+    @apply flex gap-4;
+  }
+
+  .sugar-radio-label {
+    @apply flex items-center gap-2 cursor-pointer text-default-font;
+  }
+
+
+  .sugar-radio-text {
+    @apply text-sm;
+  }
+
+    .ice-radio-input,
+  .sugar-radio-input {
+    @apply appearance-none m-0 w-5 h-5 border-2 border-neutral-300 rounded-full bg-white transition-all duration-200 cursor-pointer flex items-center justify-center relative;
+  }
+
+  .ice-radio-input::after,
+  .sugar-radio-input::after {
+    content: "";
+    @apply w-2.5 h-2.5 rounded-full bg-brand-600 scale-0 transition-transform duration-200;
+  }
+
+  .ice-radio-input:checked,
+  .sugar-radio-input:checked {
+    @apply border-brand-600;
+  }
+
+  .ice-radio-input:checked::after,
+  .sugar-radio-input:checked::after {
+    @apply scale-100;
+  }
+
+  .ice-radio-label:hover .ice-radio-input:not(:checked),
+  .sugar-radio-label:hover .sugar-radio-input:not(:checked) {
+    @apply border-brand-400;
+  }
+
+  .quantity-section {
+    @apply flex flex-col;
+  }
+
+  .quantity-label {
+    @apply text-caption-bold text-neutral-500 uppercase tracking-wider mb-2;
+  }
+
+  .quantity-controls {
+    @apply flex items-center gap-4 bg-white border border-neutral-200 rounded-full w-fit px-2 py-1;
+  }
+
+  .quantity-btn {
+    @apply p-2 rounded-full text-neutral-600 transition-colors active:scale-90 not-disabled:hover:bg-neutral-100 not-disabled:hover:text-brand-600;
+  }
+
+  .quantity-display {
+    @apply text-body-bold text-default-font w-12 text-center focus:outline-none;
+  }
+
+  .modal-footer {
+    @apply relative flex flex-row w-full items-center justify-between p-6 border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)];
+  }
+
+  .price-display {
+    @apply flex flex-col;
+  }
+
+  .price-display span {
+    @apply text-caption text-neutral-500;
+  }
+
+  .price-display output {
+    @apply text-heading-2 font-bold text-brand-600;
+  }
+
+  .add-to-cart-btn {
+    @apply px-8 py-3 bg-brand-600 text-white font-bold rounded-full hover:bg-brand-700 transition-all active:scale-95 shadow-md;
+  }
+}

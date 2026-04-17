@@ -2,6 +2,6 @@
 
 @layer components {
   .main-layout {
-    @apply min-h-screen grid grid-rows-[auto_1fr_auto];
+    @apply relative min-h-screen grid grid-rows-[auto_1fr_auto];
   }
 }
