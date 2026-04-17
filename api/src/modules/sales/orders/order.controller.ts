@@ -2,29 +2,13 @@ import type { Request, Response } from "express";
 import type { OrderService } from "./order.service";
 import {
   OrderStatusSchema,
-  type DeliveryMethod,
-  type IceLevel,
   type OrderStatus,
-  type SugarLevel,
 } from "./order.model";
 import {
   BadRequestError,
   UnauthorizedError,
 } from "@/modules/shared/utils/errors";
 import orderService from "./order.service";
-
-export interface OrderRequestPayload {
-  customerId: string;
-  deliveryMethod: DeliveryMethod;
-  deliveryAddress?: string;
-  items: Array<{
-    orderVariantId: string;
-    quantity?: number;
-    iceLevel?: IceLevel;
-    sugarLevel?: SugarLevel;
-    toppings?: Array<{ id: string; quantity?: number }>;
-  }>;
-}
 
 class OrderController {
   private readonly orderService: OrderService;
@@ -90,11 +74,22 @@ class OrderController {
     }
 
     const { id: customerId } = req.user;
-    const orderData: OrderRequestPayload = {
+
+    if (req.user.role !== "customer") {
+      throw new UnauthorizedError(
+        "Only customers can create orders",
+        "FORBIDDEN",
+      );
+    }
+
+    const { delivery, paymentMethod } = req.body;
+
+    const createdOrder = await this.orderService.createOrder(
       customerId,
-      ...req.body,
-    };
-    const createdOrder = await this.orderService.createOrder(orderData);
+      delivery,
+      paymentMethod,
+    );
+
     return res
       .status(201)
       .json({ success: true, data: { order: createdOrder } });
