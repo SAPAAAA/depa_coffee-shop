@@ -121,7 +121,7 @@ class OrderRepository {
     const performInsert = async (connection: Knex | Knex.Transaction) => {
       const { items, ...orderData } = order;
 
-      const dbOrderData = camelcaseKeys(orderData, { deep: true });
+      const dbOrderData = snakecaseKeys(orderData, { deep: true });
       const [insertedOrder] = await connection("orders")
         .insert(dbOrderData)
         .returning("*");
