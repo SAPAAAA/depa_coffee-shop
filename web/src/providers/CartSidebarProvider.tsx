@@ -351,6 +351,11 @@ const CartSidebarProvider = ({
     );
   };
 
+  const resetCart = useCallback(() => {
+    setItems([]);
+    setCartId(null);
+  }, []);
+
   const values = useMemo(
     () => ({
       isOpen,
@@ -364,6 +369,7 @@ const CartSidebarProvider = ({
       addTopping,
       removeTopping,
       items,
+      resetCart,
     }),
     [isOpen, items],
   );
