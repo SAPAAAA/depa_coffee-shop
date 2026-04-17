@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { NavLink, Link } from "react-router";
+import { NavLink, Link, useNavigate } from "react-router";
 
 import "./TopNav.css";
 import useCartSidebar from "@/hooks/useCartSidebar";
@@ -15,13 +15,15 @@ const TABS = [
 ];
 
 const TopNav = memo(({}: Readonly<TopNavProps>) => {
+  const navigate = useNavigate();
   const { openSidebar } = useCartSidebar();
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleLogout = () => {
-    logout();
     setIsDropdownOpen(false);
+    logout();
+    navigate("/login");
   };
 
   return (
