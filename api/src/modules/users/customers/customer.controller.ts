@@ -39,7 +39,9 @@ class CustomerController {
 
     res.status(200).json({
       success: true,
-      data: { user: CustomerResponseSchema.parse(customer) },
+      data: {
+        user: { ...CustomerResponseSchema.parse(customer), role: "customer" },
+      },
     });
   };
 
@@ -67,12 +69,10 @@ class CustomerController {
       );
     }
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        data: { user: CustomerResponseSchema.parse(updatedCustomer) },
-      });
+    res.status(200).json({
+      success: true,
+      data: { user: CustomerResponseSchema.parse(updatedCustomer) },
+    });
   };
 }
 
