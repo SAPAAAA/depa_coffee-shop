@@ -30,7 +30,6 @@ class AuthController {
   });
 
   getMe = asyncHandler(async (req: Request, res: Response) => {
-    console.log("GetMe called with user:", req.user);
     if (!req.user || Array.isArray(req.user) || !req.user.id) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
