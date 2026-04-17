@@ -27,11 +27,11 @@ class CartService {
   updateCartItem = async (
     cartId: string, 
     itemId: string, 
-    payload: Partial<CreateCompleteCartItemDTO>
+    payload: UpdateCompleteCartItemDTO,
   ) => {
     const response = await httpClient.put<{ cart: CompleteCart }>(
       `/api/carts/${cartId}/items/${itemId}`, 
-      payload
+      payload,
     );
     return response.cart;
   };

@@ -3,6 +3,7 @@ import type {
   CreateCompleteCartDTO,
   CreateCompleteCartItemDTO,
   UpdateCompleteCartDTO,
+  UpdateCompleteCartItemDTO,
 } from "./cart.model";
 import cartService from "./cart.service";
 import type { Request, Response } from "express";
@@ -39,11 +40,11 @@ class CartController {
     const updatedCart = await this.cartService.createCartItem(
       customerId,
       cartId,
-      payload
+      payload,
     );
     
     return res.status(201).json({ success: true, data: { cart: updatedCart } });
-  }
+  };
 
   getCustomerCompleteCart = async (req: Request, res: Response) => {
     if (!req.user || Array.isArray(req.user) || !req.user.id) {
@@ -63,13 +64,13 @@ class CartController {
 
     const { cartId, itemId } = req.params as { cartId: string; itemId: string };
     const customerId = req.user.id;
-    const payload: Partial<CreateCompleteCartItemDTO> = req.body;
+    const payload: UpdateCompleteCartItemDTO = req.body;
 
     const updatedCart = await this.cartService.updateCartItem(
       customerId,
       cartId,
       itemId,
-      payload
+      payload,
     );
     
     return res.status(200).json({ success: true, data: { cart: updatedCart } });
@@ -87,7 +88,7 @@ class CartController {
     const updatedCart = await this.cartService.updateCart(
       customerId, 
       cartId, 
-      payload
+      payload,
     );
     
     return res.status(200).json({ success: true, data: { cart: updatedCart } });
