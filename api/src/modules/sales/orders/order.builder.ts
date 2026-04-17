@@ -120,6 +120,7 @@ export interface OrderBuilder {
 
 export class OrderBuilderImpl implements OrderBuilder {
   private readonly order: Partial<CreateCompleteOrderDTO> = {};
+  private readonly taxRate: number = 0.08;
 
   constructor() {
     this.order = {
@@ -188,7 +189,7 @@ export class OrderBuilderImpl implements OrderBuilder {
       const price = (item.calculatedPrice as number) ?? 0;
       return sum + price;
     }, 0);
-    const totalAmount = itemsTotal + ((this.order.shippingFee as number) ?? 0);
+    const totalAmount = (itemsTotal + ((this.order.shippingFee as number) ?? 0)) * (1 + this.taxRate);
 
     const safeOrder = CreateCompleteOrderSchema.safeParse({
       ...this.order,
