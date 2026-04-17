@@ -34,6 +34,42 @@ class OrderRepository {
     return trx || this.knex;
   }
 
+  getOrderWithCompleteInfo = async (id: string, trx?: Knex | Knex.Transaction): Promise<CompleteOrder | null> => {
+    const performQuery = async (connection: Knex | Knex.Transaction) => {
+      const dbOrder = await connection("orders").where({ id }).first();
+      if (!dbOrder) return null;
+
+      const dbItems = await connection("order_items")
+        .where({ order_id: id })
+        .select("*");
+
+      const itemIds = dbItems.map((item) => item.id);
+      const dbToppings =
+        itemIds.length > 0
+          ? await connection("order_item_toppings")
+              .whereIn("order_item_id", itemIds)
+              .select("*")
+          : [];
+
+      const itemsWithToppings = dbItems.map((item) => ({
+        ...camelcaseKeys(item, { deep: true }),
+        orderId: item.order_id,
+        toppings: dbToppings
+          .map((topping) => camelcaseKeys(topping, { deep: true }))
+          .filter((topping) => topping.orderItemId === item.id),
+      }));
+
+      const completeOrder = {
+        ...OrderSchema.parse(camelcaseKeys(dbOrder, { deep: true })),
+        items: itemsWithToppings,
+      };
+
+      return CompleteOrderSchema.parse(completeOrder);
+    };
+
+    return trx ? performQuery(trx) : this.knex.transaction(performQuery);
+  };
+
   getOrdersWithCompleteInfo = async (
     queryParams: {
       status?: OrderStatus;
@@ -154,9 +190,12 @@ class OrderRepository {
         }
       });
 
-      const insertedToppings = await connection("order_item_toppings")
-        .insert(toppingsToInsert)
-        .returning("*");
+      let insertedToppings: any[] = [];
+      if (toppingsToInsert.length > 0) {
+        insertedToppings = await connection("order_item_toppings")
+          .insert(toppingsToInsert)
+          .returning("*");
+      }
 
       const parsedToppings = insertedToppings.map((topping) =>
         OrderItemToppingSchema.parse(camelcaseKeys(topping, { deep: true })),

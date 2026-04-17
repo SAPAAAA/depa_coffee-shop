@@ -155,9 +155,19 @@ class OrderService {
         .addItems(builtOrderItems)
         .return();
 
+      await this.cartRepository.deleteCart(customerCart.id, trx);
+
       return await this.orderRepository.createOrder(completeOrder, trx);
     });
   };
+
+  getOrderCompleteInfo = async (id: string) => {
+    const order = await this.orderRepository.getOrderWithCompleteInfo(id);
+    if (!order) {
+      throw new NotFoundError("Failed to get order info", "OBJECT_NOT_FOUND");
+    }
+    return order;
+  }
 
   getOrdersCompleteInfo = async (queryParams: {
     status?: OrderStatus;
