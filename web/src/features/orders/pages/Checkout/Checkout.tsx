@@ -58,13 +58,12 @@ const Checkout = () => {
   }
 
   const subtotal = items.reduce(
-    (sum, item) => sum + item.calculatedPrice * item.quantity,
+    (sum, item) => sum + item.calculatedPrice,
     0,
   );
   const tax = subtotal * 0.08;
   const shipping = 15;
   const total = subtotal + tax + shipping;
-
 
   return (
     <div className="checkout-page">
