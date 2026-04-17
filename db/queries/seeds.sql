@@ -3,13 +3,14 @@ INSERT INTO customers (id, username, password, first_name, last_name, email, pho
 VALUES 
 ('018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9e01', 'johndoe', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'John', 'Doe', 'john.doe@email.com', '0901234567', '1992-05-15', 'Male', '123 Maple St, Springfield', TRUE),
 ('018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9e02', 'janesmith', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'Jane', 'Smith', 'jane.smith@email.com', '0907654321', '1995-10-20', 'Female', '456 Oak Ave, Metropolis', TRUE),
-('018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9e03', 'mike_brown', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'Mike', 'Brown', 'mike.b@email.com', '0901112223', '1988-12-02', 'Male', '789 Pine Rd, Gotham', FALSE);
-
+('018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9e03', 'mike_brown', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'Mike', 'Brown', 'mike.b@email.com', '0901112223', '1988-12-02', 'Male', '789 Pine Rd, Gotham', FALSE),
+('018e9f2b-7c1a-7b3a-9e1d-5a6b7c8d9999', 'test_customer', '$argon2id$v=19$m=65536,t=3,p=4$vT9S77rNf4w6D3v6$0/f6K0B8n0Q8yH7j0Y9S7w', 'DinhKore', 'Test', 'test@example.com', '0999888777', '2000-01-01', 'Male', 'Ho Chi Minh City', TRUE);
 -- STAFF
 INSERT INTO staff (id, username, password, name, role)
 VALUES 
 ('018e9f2b-7c1a-7b3a-9e1d-6a1b2c3d4e01', 'admin_one', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'Alice Johnson', 'admin'),
-('018e9f2b-7c1a-7b3a-9e1d-6a1b2c3d4e02', 'barista_bob', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'Bob Wilson', 'barista');
+('018e9f2b-7c1a-7b3a-9e1d-6a1b2c3d4e02', 'barista_bob', '$argon2id$v=19$m=65536,t=2,p=4$R2N2ZVNrWVp0c3VQclFpVQ$FYapdTXyEfJoCyuXZz3I61lR7tmqbl0kFN5dlr4ACPk', 'Bob Wilson', 'barista'),
+('018e9f2b-7c1a-7b3a-9e1d-6a1b2c3d9999', 'test_staff', '$argon2id$v=19$m=65536,t=3,p=4$vT9S77rNf4w6D3v6$0/f6K0B8n0Q8yH7j0Y9S7w', 'Staff Tester', 'admin');
 
 -- DRINK CATEGORIES
 INSERT INTO drink_categories (id, name, description)
