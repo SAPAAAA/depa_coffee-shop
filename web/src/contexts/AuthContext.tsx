@@ -1,7 +1,9 @@
 import { createContext } from "react";
 import type { Customer } from "@api-types/users/customers/customer.model";
 
-export type User = Customer;
+export type User = Customer & {
+  role: "customer" | "barista" | "admin";
+}
 
 export interface AuthContextValues {
   user: User | null;

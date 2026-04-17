@@ -4,6 +4,7 @@ import type { CartItem } from "@/contexts/CartSidebarContext";
 import "./CartSidebar.css";
 import ViewDrinkModal from "@/features/drinks/components/ViewDrinkModal";
 import { getDrinkCompleteInfo, type DrinkCompleteInfo } from "@/services/drink";
+import { useNavigate } from "react-router";
 
 interface CartItemProps {
   item: CartItem;
@@ -112,6 +113,8 @@ const CartSidebarItem = ({
 };
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
   const { isOpen, closeSidebar, items, updateQuantity, updateItem } =
     useCartSidebar();
   const [drinkPromise, setDrinkPromise] =
@@ -125,7 +128,7 @@ const Sidebar = () => {
 
   const clickedItemSelectedOptions = useMemo(() => {
     if (!clickedItemId) return undefined;
-    
+
     const item = items.find((i) => i.id === clickedItemId);
     if (!item) return undefined;
 
@@ -138,15 +141,18 @@ const Sidebar = () => {
     };
   }, [clickedItemId, items]);
 
-  const handleDrinkClick = useCallback((itemId: string) => {
-    const item = items.find((i) => i.id === itemId);
-    if (!item) return;
+  const handleDrinkClick = useCallback(
+    (itemId: string) => {
+      const item = items.find((i) => i.id === itemId);
+      if (!item) return;
 
-    const drinkId = item.drink.id;
-    const promise = getDrinkCompleteInfo(drinkId);
-    setDrinkPromise(promise);
-    setClickedItemId(itemId);
-  }, [items]);
+      const drinkId = item.drink.id;
+      const promise = getDrinkCompleteInfo(drinkId);
+      setDrinkPromise(promise);
+      setClickedItemId(itemId);
+    },
+    [items],
+  );
 
   const handleOnCloseModal = useCallback(() => {
     setDrinkPromise(null);
@@ -161,6 +167,10 @@ const Sidebar = () => {
       handleOnCloseModal();
     }
   };
+
+  const handleOnCheckout = useCallback(() => {
+    navigate("/checkout");
+  }, []);
 
   return (
     <>
@@ -212,7 +222,12 @@ const Sidebar = () => {
             <span className="subtotal-label">Subtotal:</span>
             <output className="subtotal-value">${subtotal.toFixed(2)}</output>
           </div>
-          <button className="checkout-button" type="button">
+          <button
+            className="checkout-button"
+            type="button"
+            disabled={items.length === 0}
+            onClick={handleOnCheckout}
+          >
             Proceed to Checkout
           </button>
         </footer>
