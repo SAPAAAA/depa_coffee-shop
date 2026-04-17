@@ -8,6 +8,7 @@ import {
   type CreateCompleteCartDTO,
   type CreateCompleteCartItemDTO,
   type UpdateCompleteCartDTO,
+  type UpdateCompleteCartItemDTO,
 } from "./cart.model";
 import db from "@/core/db/knex";
 import camelcaseKeys from "camelcase-keys";
@@ -180,6 +181,50 @@ class CartRepository {
 
     return CompleteCartSchema.parse(createdCartWithItems);
   };
+
+  updateCartItem = async (
+    itemId: string,
+    payload: UpdateCompleteCartItemDTO,
+    trx?: Knex | Knex.Transaction,
+  ) => {
+    const dbPayload = snakecaseKeys(payload, { deep: true });
+    const toppings = payload.toppings;
+    
+    let updatedCartItem = {};
+    let updatedCartItemToppings: any[] = [];
+
+    if (toppings) {
+      await this.conn(trx)("cart_item_toppings")
+        .where({ cart_item_id: itemId })
+        .del();
+      const toppingsPayload = toppings.map((topping) => ({
+        cart_item_id: itemId,
+        topping_id: topping.id,
+        quantity: topping.quantity || 1,
+      }));
+      updatedCartItemToppings = await this.conn(trx)("cart_item_toppings")
+        .insert(toppingsPayload)
+        .onConflict(["cart_item_id", "topping_id"])
+        .merge()
+        .returning("*");
+    }
+
+    [updatedCartItem] = await this.conn(trx)("cart_items")
+      .where({ id: itemId })
+      .update(dbPayload)
+      .returning("*");
+
+    const updatedCartItemWithToppings = {
+      ...updatedCartItem,
+      toppings: updatedCartItemToppings.map((topping) => ({
+        id: topping.topping_id,
+        quantity: topping.quantity,
+      })),
+    };
+    return CompleteCartItemSchema.parse(
+      camelcaseKeys(updatedCartItemWithToppings, { deep: true }),
+    );
+  }
 
   createCartItem = async (
     cartId: string,

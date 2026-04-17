@@ -79,7 +79,7 @@ class OrderService {
         if (item.toppings && item.toppings.length > 0) {
           const toppingsPromise = item.toppings.map(async (t) => {
             const cachedTopping = fetchedToppings.get(t.id);
-            const topping = cachedTopping || await this.toppingRepository.getToppingById(t.id, trx);
+            const topping = cachedTopping || await this.toppingRepository.getById(t.id, trx);
 
             if (topping) {
               fetchedToppings.set(t.id, topping);
