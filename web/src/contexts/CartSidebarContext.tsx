@@ -27,6 +27,7 @@ interface CartSidebarContextValue {
   addTopping: (itemId: string, topping: Topping) => void;
   removeTopping: (itemId: string, toppingId: string) => void;
   items: CartItem[];
+  resetCart: () => void;
 }
 
 const SidebarContext = createContext<CartSidebarContextValue | null>(null);
