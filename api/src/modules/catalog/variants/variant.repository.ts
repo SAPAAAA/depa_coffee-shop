@@ -39,6 +39,18 @@ class DrinkVariantRepository {
     );
   };
 
+  checkVariantStock = async (
+    variantId: string,
+    requiredQuantity: number,
+    trx?: Knex | Knex.Transaction,
+  ): Promise<boolean> => {
+    const variant = await this.getById(variantId, trx);
+    if (!variant) {
+      return false;
+    }
+    return variant.stockQuantity >= requiredQuantity;
+  }
+
   getById = async (
     id: string,
     trx?: Knex | Knex.Transaction,
