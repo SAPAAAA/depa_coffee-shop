@@ -14,7 +14,7 @@ class AuthService {
   };
 
   logout = async () => {
-    await httpClient.post("/auth/logout");
+    await httpClient.post("/api/auth/logout");
   };
 
   getMe = async (): Promise<User | null> => {

@@ -75,7 +75,7 @@ class AuthService {
 
     if (role === "customer") {
       user = await this.customerRepository.getByUsername(username);
-    } else if (role === "staff") {
+    } else if (role === "staff" || role === "admin" || role === "barista") {
       user = await this.staffRepository.getByUsername(username);
     } else {
       throw new NotFoundError(
@@ -100,11 +100,11 @@ class AuthService {
     }
 
     const tokens = await this.generateTokens({ userId: user.id, role });
-    
-    const userResponse = role === "customer" 
-      ? CustomerResponseSchema.parse(user) 
+
+    const userResponse = role === "customer"
+      ? CustomerResponseSchema.parse(user)
       : { id: user.id, username: user.username, role }; // TODO: Remember to replace this with proper staff response schema
-    
+
     return {
       tokens,
       user: userResponse,
@@ -116,7 +116,7 @@ class AuthService {
 
     if (role === "customer") {
       user = await this.customerRepository.getById(userId);
-    } else if (role === "staff") {
+    } else if (role === "staff" || role === "admin" || role === "barista") {
       user = await this.staffRepository.getById(userId);
     } else {
       throw new NotFoundError("User not found", "OBJECT_NOT_FOUND");
@@ -126,14 +126,14 @@ class AuthService {
       throw new NotFoundError("User not found", "OBJECT_NOT_FOUND");
     }
 
-    const userResponse = role === "customer" 
-      ? CustomerResponseSchema.parse(user) 
+    const userResponse = role === "customer"
+      ? CustomerResponseSchema.parse(user)
       : { id: user.id, username: user.username, role }; // TODO: Remember to replace this with proper staff response schema
 
     return userResponse;
   }
 
-  logout = async (refreshToken: string) => {
+  logout = async (_refreshToken: string) => {
     // TODO: Implement token blacklisting to invalidate the refresh token
     return;
   }

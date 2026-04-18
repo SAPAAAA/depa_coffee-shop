@@ -33,7 +33,8 @@ const AuthProvider = ({ children }: Readonly<{ children: ReactNode }>) => {
   );
 
   const logout = useCallback(async () => {
-    await httpClient.post("/auth/logout");
+    await httpClient.post("/api/auth/logout");
+    await authService.logout();
     setUser(null);
   }, []);
 

@@ -5,7 +5,7 @@ import "./TopNav.css";
 import useCartSidebar from "@/hooks/useCartSidebar";
 import useAuth from "@/hooks/useAuth";
 
-interface TopNavProps {}
+interface TopNavProps { }
 
 const TABS = [
   { name: "Home", path: "/" },
@@ -14,15 +14,15 @@ const TABS = [
   { name: "Contact", path: "/contact" },
 ];
 
-const TopNav = memo(({}: Readonly<TopNavProps>) => {
+const TopNav = memo(({ }: Readonly<TopNavProps>) => {
   const navigate = useNavigate();
   const { openSidebar } = useCartSidebar();
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsDropdownOpen(false);
-    logout();
+    await logout();
     navigate("/login");
   };
 
@@ -44,7 +44,7 @@ const TopNav = memo(({}: Readonly<TopNavProps>) => {
           );
         })}
       </ul>
-      
+
       {/* Cart icon for logged in users */}
       {user && (
         <div className="nav-cart">

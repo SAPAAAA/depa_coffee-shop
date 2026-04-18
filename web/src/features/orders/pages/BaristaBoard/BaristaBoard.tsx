@@ -32,11 +32,11 @@ export default function BaristaBoard() {
     const fetchOrders = async () => {
         try {
             setIsLoading(true);
-            // Gọi API theo chuẩn proxy của Vite
-            const data = await httpClient.get<Order[]>('/api/orders');
+            const response = await httpClient.get<any>('/api/orders');
+            const ordersArray = response?.orders || response?.data?.orders || response?.data?.data?.orders || [];
 
-            if (Array.isArray(data)) {
-                setOrders(data);
+            if (Array.isArray(ordersArray)) {
+                setOrders(ordersArray);
             }
         } catch (error) {
             console.error("Lỗi khi tải danh sách đơn hàng:", error);
