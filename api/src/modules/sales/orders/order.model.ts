@@ -31,6 +31,7 @@ export const OrderItemToppingSchema = z.object({
   orderItemId: z.uuidv7(),
   toppingId: z.uuidv7(),
   quantity: z.number().int().positive().default(1),
+  toppingName: z.string().optional(),
 });
 
 export const CreateOrderItemToppingSchema = OrderItemToppingSchema;
@@ -47,6 +48,9 @@ export const OrderItemSchema = z.object({
   sugarLevel: SugarLevelSchema.default("100%"),
   iceLevel: IceLevelSchema.default("normal_ice"),
   calculatedPrice: z.coerce.number().nonnegative(),
+  drinkName: z.string().optional(),
+  variantName: z.string().optional(),
+  toppings: z.array(OrderItemToppingSchema).default([]),
 });
 
 export const CompleteOrderItemSchema = OrderItemSchema.extend({

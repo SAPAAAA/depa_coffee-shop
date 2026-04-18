@@ -40,15 +40,22 @@ class OrderRepository {
       if (!dbOrder) return null;
 
       const dbItems = await connection("order_items")
-        .where({ order_id: id })
-        .select("*");
+        .join("drink_variants", "order_items.drink_variant_id", "drink_variants.id")
+        .join("drinks", "drink_variants.drink_id", "drinks.id")
+        .where({ order_id: id }) // Dùng where cho một đơn hàng cụ thể
+        .select(
+          "order_items.*",
+          "drink_variants.name as variant_name",
+          "drinks.name as drink_name"
+        );
 
       const itemIds = dbItems.map((item) => item.id);
       const dbToppings =
         itemIds.length > 0
           ? await connection("order_item_toppings")
-              .whereIn("order_item_id", itemIds)
-              .select("*")
+            .join("toppings", "order_item_toppings.topping_id", "toppings.id")
+            .whereIn("order_item_id", itemIds)
+            .select("order_item_toppings.*", "toppings.name as topping_name")
           : [];
 
       const itemsWithToppings = dbItems.map((item) => ({
@@ -86,18 +93,24 @@ class OrderRepository {
 
       const dbOrders = await query;
       if (!dbOrders || dbOrders.length === 0) return [];
-
       const orderIds = dbOrders.map((order) => order.id);
       const dbItems = await connection("order_items")
-        .whereIn("order_id", orderIds)
-        .select("*");
+        .join("drink_variants", "order_items.drink_variant_id", "drink_variants.id")
+        .join("drinks", "drink_variants.drink_id", "drinks.id")
+        .whereIn("order_id", orderIds) // Dùng whereIn cho danh sách nhiều đơn hàng
+        .select(
+          "order_items.*",
+          "drink_variants.name as variant_name",
+          "drinks.name as drink_name"
+        );
 
       const itemIds = dbItems.map((item) => item.id);
       const dbToppings =
         itemIds.length > 0
           ? await connection("order_item_toppings")
-              .whereIn("order_item_id", itemIds)
-              .select("*")
+            .join("toppings", "order_item_toppings.topping_id", "toppings.id")
+            .whereIn("order_item_id", itemIds)
+            .select("order_item_toppings.*", "toppings.name as topping_name")
           : [];
 
       const itemsWithToppings = dbItems.map((item) => ({
