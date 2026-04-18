@@ -75,7 +75,7 @@ class AuthService {
 
     if (role === "customer") {
       user = await this.customerRepository.getByUsername(username);
-    } else if (role === "staff" || role === "admin" || role === "barista") {
+    } else if (role === "admin" || role === "barista") {
       user = await this.staffRepository.getByUsername(username);
     } else {
       throw new NotFoundError(

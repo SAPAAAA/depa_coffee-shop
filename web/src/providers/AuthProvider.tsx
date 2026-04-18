@@ -3,7 +3,6 @@ import AuthContext, {
   type User,
 } from "@/contexts/AuthContext";
 import authService from "@/services/auth";
-import { httpClient } from "@/utils/httpClient";
 import {
   useCallback,
   useEffect,
@@ -33,7 +32,6 @@ const AuthProvider = ({ children }: Readonly<{ children: ReactNode }>) => {
   );
 
   const logout = useCallback(async () => {
-    await httpClient.post("/api/auth/logout");
     await authService.logout();
     setUser(null);
   }, []);
