@@ -43,6 +43,19 @@ const TopNav = memo(({ }: Readonly<TopNavProps>) => {
             </li>
           );
         })}
+        {/* Kiểm tra nếu là barista thì hiển thị thêm tab Order */}
+        {user?.role === "barista" && (
+          <li className="nav-item">
+            <NavLink
+              to="/barista"
+              className={({ isActive }) =>
+                `nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              Order
+            </NavLink>
+          </li>
+        )}
       </ul>
 
       {/* Cart icon for logged in users */}
