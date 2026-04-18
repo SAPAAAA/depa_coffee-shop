@@ -8,8 +8,15 @@ class ToppingService {
     );
     return response.topping;
   };
+
+  getAllToppings = async (): Promise<Topping[]> => {
+    const response = await httpClient.get<{ toppings: Topping[] }>(
+      "/api/toppings",
+    );
+    return response.toppings;
+  };
 }
 
 const toppingsService = new ToppingService();
 export default toppingsService;
-export const { getToppingById } = toppingsService;
+export const { getToppingById, getAllToppings } = toppingsService;

@@ -52,6 +52,19 @@ const CartSidebarItem = ({
                 Ice: {formatIceLevel(item.iceLevel)}
               </p>
               <p className="cart-item-spec-text">Sugar: {item.sugarLevel}</p>
+
+              {item.toppings?.length > 0 && (
+                <div className="mt-1">
+                  {item.toppings.map((t) => (
+                    <p
+                      key={t.topping.id}
+                      className="cart-item-spec-text text-neutral-500"
+                    >
+                      + {t.topping.name} x{t.quantity}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Right Side: Actions */}
@@ -59,6 +72,12 @@ const CartSidebarItem = ({
               <p className="cart-item-price">
                 ${item.calculatedPrice.toFixed(2)}
               </p>
+
+              {item.quantity > 1 && (
+                <p className="text-caption text-neutral-500 m-0">
+                  (${(item.calculatedPrice / item.quantity).toFixed(2)} each)
+                </p>
+              )}
 
               <div className="cart-item-quantity-controls">
                 <button
@@ -142,12 +161,17 @@ const Sidebar = () => {
     const item = items.find((i) => i.id === clickedItemId);
     if (!item) return undefined;
 
+    const mappedToppings = item.toppings?.map((t) => ({
+      id: t.topping.id,
+      quantity: t.quantity,
+    }));
+
     return {
       variantId: item.variant.id,
       iceLevel: item.iceLevel,
       sugarLevel: item.sugarLevel,
       quantity: item.quantity,
-      toppings: item.toppings,
+      toppings: mappedToppings,
     };
   }, [clickedItemId, items]);
 

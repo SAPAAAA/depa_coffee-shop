@@ -1,11 +1,22 @@
+// src/features/drinks/components/ViewDrinkModal/ViewDrinkModal.tsx
 import "./ViewDrinkModal.css";
-import { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { DrinkCompleteInfo } from "@/services/drink";
 import type { IceLevel, SugarLevel } from "@api-types/sales/orders/order.model";
 import type { CartItem } from "@/contexts/CartSidebarContext";
 import type { Drink } from "@api-types/catalog/drinks/drink.model";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "react-router";
+import { getAllToppings } from "@/services/topping";
+import type { Topping } from "@api-types/catalog/toppings/topping.model";
 
 interface ViewDrinkModalProps {
   drinkPromise: Promise<DrinkCompleteInfo>;
@@ -15,6 +26,7 @@ interface ViewDrinkModalProps {
     iceLevel: IceLevel;
     sugarLevel: SugarLevel;
     quantity: number;
+    toppings: Array<{ id: string; quantity: number }>;
   };
   onAddToCart: (item: Omit<CartItem, "id" | "calculatedPrice">) => void;
 }
@@ -36,13 +48,15 @@ const SUGAR_LEVEL_OPTIONS: { value: SugarLevel; label: string }[] = [
 
 const DrinkDetails = ({
   drinkPromise,
+  toppingsPromise,
   onClose,
   preSelectedOptions,
   onAddToCart,
-}: ViewDrinkModalProps) => {
+}: ViewDrinkModalProps & { toppingsPromise: Promise<Topping[]> }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const drink = use(drinkPromise);
+  const toppings = use(toppingsPromise);
 
   const variantOptions = drink.variants.toSorted(
     (a, b) => a.volumeMl - b.volumeMl,
@@ -65,12 +79,52 @@ const DrinkDetails = ({
     (variant) => variant.id === selectedVariantId,
   );
 
+  const [selectedToppings, setSelectedToppings] = useState<
+    Array<{ id: string; quantity: number }>
+  >(preSelectedOptions?.toppings || []);
+
+  const toppingsTotalPrice = selectedToppings.reduce((total, t) => {
+    const toppingInfo = toppings.find((top) => top.id === t.id);
+    return total + (toppingInfo?.unitPrice || 0) * t.quantity;
+  }, 0);
+
   const totalPrice = selectedVariant?.price
-    ? selectedVariant.price * quantity
+    ? (selectedVariant.price + toppingsTotalPrice) * quantity
     : 0;
+
+  const handleToppingChange = useCallback(
+    (toppingId: string, newQuantity: number) => {
+      setSelectedToppings((prev) => {
+        const existing = prev.find((t) => t.id === toppingId);
+        if (existing) {
+          return prev.map((t) =>
+            t.id === toppingId ? { ...t, quantity: newQuantity } : t,
+          );
+        } else {
+          return [...prev, { id: toppingId, quantity: newQuantity }];
+        }
+      });
+    },
+    [],
+  );
 
   const item = useMemo(() => {
     if (!selectedVariant) return null;
+
+    const mappedToppings = selectedToppings
+      .map((t) => {
+        const toppingInfo = toppings.find((top) => top.id === t.id);
+        return toppingInfo
+          ? {
+              topping: toppingInfo,
+              quantity: t.quantity,
+            }
+          : null;
+      })
+      .filter(Boolean) as Array<{
+      topping: Topping;
+      quantity: number;
+    }>;
 
     return {
       drink: {
@@ -84,9 +138,17 @@ const DrinkDetails = ({
       sugarLevel: selectedSugarLevel,
       iceLevel: selectedIceLevel,
       quantity,
-      toppings: [],
+      toppings: mappedToppings,
     };
-  }, [drink, selectedVariant, selectedSugarLevel, selectedIceLevel, quantity]);
+  }, [
+    drink,
+    selectedVariant,
+    selectedSugarLevel,
+    selectedIceLevel,
+    quantity,
+    selectedToppings,
+    toppings,
+  ]);
 
   return (
     <>
@@ -191,6 +253,71 @@ const DrinkDetails = ({
                       <span className="sugar-radio-text">{option.label}</span>
                     </label>
                   ))}
+                </div>
+              </section>
+
+              <section className="toppings-section">
+                <span className="toppings-label">Toppings</span>
+                <div className="toppings-list">
+                  {toppings.map((topping: Topping) => {
+                    const selected = selectedToppings.find(
+                      (t) => t.id === topping.id,
+                    );
+                    const qty = selected ? selected.quantity : 0;
+                    return (
+                      <div key={topping.id} className="topping-item">
+                        <div className="topping-info">
+                          <span className="topping-name">{topping.name}</span>
+                          <span className="topping-price">
+                            +${topping.unitPrice.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="topping-controls">
+                          <button
+                            type="button"
+                            className="quantity-btn"
+                            onClick={() =>
+                              handleToppingChange(topping.id, qty - 1)
+                            }
+                            aria-label={`Decrease quantity of ${topping.name}`}
+                            disabled={qty === 0}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="14"
+                              height="14"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z" />
+                            </svg>
+                          </button>
+                          <span className="quantity-display text-sm font-bold w-4 text-center">
+                            {qty}
+                          </span>
+                          <button
+                            type="button"
+                            className="quantity-btn"
+                            onClick={() =>
+                              handleToppingChange(topping.id, qty + 1)
+                            }
+                            aria-label={`Increase quantity of ${topping.name}`}
+                            disabled={qty >= 10 || qty >= topping.stockQuantity}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="14"
+                              height="14"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
 
@@ -309,6 +436,9 @@ const ViewDrinkModal = ({
 }: ViewDrinkModalProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
+  // Use lazy initializer to fetch toppings only once when modal mounts
+  const [toppingsPromise] = useState(() => getAllToppings());
+
   useEffect(() => {
     const dialogEl = dialogRef.current;
     if (dialogEl && !dialogEl.open) {
@@ -332,6 +462,7 @@ const ViewDrinkModal = ({
     >
       <DrinkDetails
         drinkPromise={drinkPromise}
+        toppingsPromise={toppingsPromise}
         onClose={onClose}
         preSelectedOptions={preSelectedOptions}
         onAddToCart={onAddToCart}

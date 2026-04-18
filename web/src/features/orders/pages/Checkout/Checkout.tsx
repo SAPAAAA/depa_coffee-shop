@@ -14,6 +14,7 @@ interface CheckoutItemProps {
   price: number;
   quantity: number;
   imageUrl: string;
+  toppings?: Array<{ topping: { name: string }; quantity: number }>;
 }
 
 const CheckoutItem = ({
@@ -24,6 +25,7 @@ const CheckoutItem = ({
   price,
   quantity,
   imageUrl,
+  toppings,
 }: CheckoutItemProps) => {
   return (
     <div className="checkout-item">
@@ -39,10 +41,26 @@ const CheckoutItem = ({
         <p className="checkout-item-meta">
           {variantName} • Ice: {iceLevel} • Sugar: {sugarLevel}
         </p>
+
+        {toppings && toppings.length > 0 && (
+          <div className="mt-1">
+            {toppings.map((t, index) => (
+              <p key={index} className="text-caption text-neutral-500 m-0">
+                + {t.topping.name} x{t.quantity}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div className="checkout-item-price-wrap">
+      <div className="checkout-item-price-wrap flex flex-col items-end">
         <span className="checkout-item-price">${price.toFixed(2)}</span>
+
+        {quantity > 1 && (
+          <span className="text-caption text-neutral-500 mt-1">
+            (${(price / quantity).toFixed(2)} each)
+          </span>
+        )}
       </div>
     </div>
   );
@@ -149,7 +167,6 @@ const Checkout = () => {
                   <label className="form-label" htmlFor="address">
                     Address
                   </label>
-                  {/* Ensure name="address" is present to be picked up by the Action */}
                   <input
                     type="text"
                     id="address"
@@ -272,7 +289,8 @@ const Checkout = () => {
                     variantName={item.variant.name || "Default Variant"}
                     iceLevel={item.iceLevel || "Regular"}
                     sugarLevel={item.sugarLevel || "Regular"}
-                    price={item.variant.price || 0}
+                    toppings={item.toppings}
+                    price={item.calculatedPrice}
                     quantity={item.quantity}
                     imageUrl={item.drink.imageUrl || "/placeholder-drink.png"}
                   />
@@ -307,7 +325,6 @@ const Checkout = () => {
               </div>
             </div>
 
-            {/* Changed type to "submit" to trigger the form action */}
             <button type="submit" className="checkout-submit-btn">
               Place Order
             </button>

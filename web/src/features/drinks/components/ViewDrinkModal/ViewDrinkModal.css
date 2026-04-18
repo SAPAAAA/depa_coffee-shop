@@ -128,6 +128,38 @@
     @apply border-brand-400;
   }
 
+  .toppings-section {
+    @apply flex flex-col gap-3 mt-2;
+  }
+
+  .toppings-label {
+    @apply text-caption-bold text-neutral-500 uppercase tracking-wider;
+  }
+
+  .toppings-list {
+    @apply flex flex-col gap-2;
+  }
+
+  .topping-item {
+    @apply flex items-center justify-between p-3 border border-neutral-200 rounded-lg bg-white shadow-sm;
+  }
+
+  .topping-info {
+    @apply flex flex-col;
+  }
+
+  .topping-name {
+    @apply text-sm font-medium text-default-font;
+  }
+
+  .topping-price {
+    @apply text-caption text-brand-600 font-medium;
+  }
+
+  .topping-controls {
+    @apply flex items-center gap-3 bg-neutral-50 border border-neutral-200 rounded-full px-2 py-1;
+  }
+
   .quantity-section {
     @apply flex flex-col;
   }
