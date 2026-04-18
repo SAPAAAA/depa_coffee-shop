@@ -7,10 +7,13 @@ type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
 
 interface OrderItem {
     id: string;
+    drinkName?: string;
+    variantName?: string;
     name?: string; // API của Tú có thể trả về tên món hoặc chỉ trả về drinkVariantId
     quantity: number;
     sugarLevel: string;
     iceLevel: string;
+    toppings?: OrderItemTopping[];
 }
 
 interface Order {
@@ -18,6 +21,13 @@ interface Order {
     status: OrderStatus;
     orderDate: string;
     items: OrderItem[];
+}
+
+interface OrderItemTopping {
+    orderItemId: string;
+    toppingId: string;
+    quantity: number;
+    toppingName?: string; // Tên topping lấy từ database
 }
 
 export default function BaristaBoard() {
@@ -76,10 +86,16 @@ export default function BaristaBoard() {
             <div className="space-y-2 mb-4">
                 {order.items?.map(item => (
                     <div key={item.id} className="text-sm">
-                        <span className="font-semibold">{item.quantity}x {item.name || 'Món uống (Chưa lấy tên)'}</span>
+                        <span className="font-semibold">{item.quantity}x {item.drinkName || 'Món uống'} ({item.variantName || "Size"})</span>
                         <div className="text-gray-500 text-xs ml-4">
                             Đường: {item.sugarLevel} | Đá: {item.iceLevel}
                         </div>
+
+                        {item.toppings && item.toppings.length > 0 && (
+                            <div className="text-blue-600 text-xs ml-4 font-medium">
+                                + Topping: {item.toppings.map(t => `${t.quantity}x ${t.toppingName}`).join(", ")}
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
