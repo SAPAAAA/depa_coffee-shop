@@ -4,10 +4,12 @@ import {
   OrderItemSchema,
   OrderItemToppingSchema,
   OrderSchema,
+  PopulatedOrderSchema,
   type CompleteOrder,
   type CreateCompleteOrderDTO,
   type Order,
   type OrderStatus,
+  type PopulatedOrder,
 } from "./order.model";
 import db from "@/core/db/knex";
 import camelcaseKeys from "camelcase-keys";
@@ -34,47 +36,40 @@ class OrderRepository {
     return trx || this.knex;
   }
 
-  getOrderWithCompleteInfo = async (id: string, trx?: Knex | Knex.Transaction): Promise<CompleteOrder | null> => {
-    const performQuery = async (connection: Knex | Knex.Transaction) => {
-      const dbOrder = await connection("orders").where({ id }).first();
-      if (!dbOrder) return null;
+  getOrderWithCompleteInfo = async (
+    id: string,
+    trx?: Knex | Knex.Transaction,
+  ): Promise<CompleteOrder | null> => {
+    const connection = this.conn(trx);
+    const dbOrder = await connection("orders").where({ id }).first();
+    if (!dbOrder) return null;
 
-      const dbItems = await connection("order_items")
-        .join("drink_variants", "order_items.drink_variant_id", "drink_variants.id")
-        .join("drinks", "drink_variants.drink_id", "drinks.id")
-        .where({ order_id: id }) // Dùng where cho một đơn hàng cụ thể
-        .select(
-          "order_items.*",
-          "drink_variants.name as variant_name",
-          "drinks.name as drink_name"
-        );
+    const dbItems = await connection("order_items")
+      .where({ order_id: id })
+      .select("*");
 
-      const itemIds = dbItems.map((item) => item.id);
-      const dbToppings =
-        itemIds.length > 0
-          ? await connection("order_item_toppings")
-            .join("toppings", "order_item_toppings.topping_id", "toppings.id")
+    const itemIds = dbItems.map((item) => item.id);
+    const dbToppings =
+      itemIds.length > 0
+        ? await connection("order_item_toppings")
             .whereIn("order_item_id", itemIds)
-            .select("order_item_toppings.*", "toppings.name as topping_name")
-          : [];
+            .select("*")
+        : [];
 
-      const itemsWithToppings = dbItems.map((item) => ({
-        ...camelcaseKeys(item, { deep: true }),
-        orderId: item.order_id,
-        toppings: dbToppings
-          .map((topping) => camelcaseKeys(topping, { deep: true }))
-          .filter((topping) => topping.orderItemId === item.id),
-      }));
+    const itemsWithToppings = dbItems.map((item) => ({
+      ...camelcaseKeys(item, { deep: true }),
+      orderId: item.order_id,
+      toppings: dbToppings
+        .map((topping) => camelcaseKeys(topping, { deep: true }))
+        .filter((topping) => topping.orderItemId === item.id),
+    }));
 
-      const completeOrder = {
-        ...OrderSchema.parse(camelcaseKeys(dbOrder, { deep: true })),
-        items: itemsWithToppings,
-      };
-
-      return CompleteOrderSchema.parse(completeOrder);
+    const completeOrder = {
+      ...OrderSchema.parse(camelcaseKeys(dbOrder, { deep: true })),
+      items: itemsWithToppings,
     };
 
-    return trx ? performQuery(trx) : this.knex.transaction(performQuery);
+    return CompleteOrderSchema.parse(completeOrder);
   };
 
   getOrdersWithCompleteInfo = async (
@@ -82,59 +77,208 @@ class OrderRepository {
       status?: OrderStatus;
       customerId?: string;
     },
-    trx?: Knex | Knex.Transaction
+    trx?: Knex | Knex.Transaction,
   ): Promise<CompleteOrder[]> => {
-    const performQuery = async (connection: Knex | Knex.Transaction) => {
-      const { status, customerId } = queryParams;
+    const connection = this.conn(trx);
+    const { status, customerId } = queryParams;
 
-      const query = connection("orders").select("*");
-      if (status) query.where({ status });
-      if (customerId) query.where({ customer_id: customerId });
+    const query = connection("orders").select("*");
+    if (status) query.where({ status });
+    if (customerId) query.where({ customer_id: customerId });
 
-      const dbOrders = await query;
-      if (!dbOrders || dbOrders.length === 0) return [];
-      const orderIds = dbOrders.map((order) => order.id);
-      const dbItems = await connection("order_items")
-        .join("drink_variants", "order_items.drink_variant_id", "drink_variants.id")
-        .join("drinks", "drink_variants.drink_id", "drinks.id")
-        .whereIn("order_id", orderIds) // Dùng whereIn cho danh sách nhiều đơn hàng
-        .select(
-          "order_items.*",
-          "drink_variants.name as variant_name",
-          "drinks.name as drink_name"
-        );
+    const dbOrders = await query;
+    if (!dbOrders || dbOrders.length === 0) return [];
+    const orderIds = dbOrders.map((order) => order.id);
+    const dbItems = await connection("order_items")
+      .whereIn("order_id", orderIds)
+      .select("*");
 
-      const itemIds = dbItems.map((item) => item.id);
-      const dbToppings =
-        itemIds.length > 0
-          ? await connection("order_item_toppings")
-            .join("toppings", "order_item_toppings.topping_id", "toppings.id")
+    const itemIds = dbItems.map((item) => item.id);
+    const dbToppings =
+      itemIds.length > 0
+        ? await connection("order_item_toppings")
             .whereIn("order_item_id", itemIds)
-            .select("order_item_toppings.*", "toppings.name as topping_name")
-          : [];
+            .select("*")
+        : [];
 
-      const itemsWithToppings = dbItems.map((item) => ({
-        ...camelcaseKeys(item, { deep: true }),
-        orderId: item.order_id,
-        toppings: dbToppings
-          .map((topping) => camelcaseKeys(topping, { deep: true }))
-          .filter((topping) => topping.orderItemId === item.id),
-      }));
+    const itemsWithToppings = dbItems.map((item) => ({
+      ...camelcaseKeys(item, { deep: true }),
+      orderId: item.order_id,
+      toppings: dbToppings
+        .map((topping) => camelcaseKeys(topping, { deep: true }))
+        .filter((topping) => topping.orderItemId === item.id),
+    }));
 
-      const completeOrders = dbOrders.map((order) => {
-        const orderItems = itemsWithToppings
-          .filter((item) => item.orderId === order.id);
+    const completeOrders = dbOrders.map((order) => {
+      const orderItems = itemsWithToppings.filter(
+        (item) => item.orderId === order.id,
+      );
 
-        return {
-          ...OrderSchema.parse(camelcaseKeys(order, { deep: true })),
-          items: orderItems,
-        };
-      });
+      return {
+        ...OrderSchema.parse(camelcaseKeys(order, { deep: true })),
+        items: orderItems,
+      };
+    });
 
-      return completeOrders.map((order) => CompleteOrderSchema.parse(order));
+    return completeOrders.map((order) => CompleteOrderSchema.parse(order));
+  };
+
+  getOrdersWithPopulatedInfo = async (
+    queryParams: {
+      status?: OrderStatus;
+      customerId?: string;
+    },
+    trx?: Knex | Knex.Transaction,
+  ): Promise<PopulatedOrder[]> => {
+    const connection = this.conn(trx);
+    const { status, customerId } = queryParams;
+    const dbOrdersQuery = connection("orders").select("*");
+    if (status) dbOrdersQuery.where({ status });
+    if (customerId) dbOrdersQuery.where({ customer_id: customerId });
+
+    const dbOrders = await dbOrdersQuery;
+    if (!dbOrders || dbOrders.length === 0) return [];
+    const orderIds = dbOrders.map((order) => order.id);
+    const dbItems = await connection("order_items")
+      .leftJoin(
+        "drink_variants",
+        "order_items.drink_variant_id",
+        "drink_variants.id",
+      )
+      .whereIn("order_id", orderIds)
+      .select(
+        "order_items.*",
+        connection.raw(`
+          json_build_object(
+            'id', drink_variants.id,
+            'drink_id', drink_variants.drink_id,
+            'name', drink_variants.name,
+            'price', drink_variants.price,
+            'volume_ml', drink_variants.volume_ml
+          ) as drink_variant
+        `),
+      )
+      .groupBy("order_items.id", "drink_variants.id");
+
+    const itemIds = dbItems.map((item) => item.id);
+    const dbToppings =
+      itemIds.length > 0
+        ? await connection("order_item_toppings")
+            .leftJoin(
+              "toppings",
+              "order_item_toppings.topping_id",
+              "toppings.id",
+            )
+            .whereIn("order_item_id", itemIds)
+            .select(
+              "order_item_toppings.*",
+              connection.raw(`
+                json_build_object(
+                  'id', toppings.id,
+                  'name', toppings.name,
+                  'unit_price', toppings.unit_price
+                ) as topping
+              `),
+            )
+            .groupBy(
+              "order_item_toppings.order_item_id",
+              "order_item_toppings.topping_id",
+              "toppings.id",
+            )
+        : [];
+
+    const itemsWithToppings = dbItems.map((item) => ({
+      ...camelcaseKeys(item, { deep: true }),
+      orderId: item.order_id,
+      toppings: dbToppings
+        .map((topping) => camelcaseKeys(topping, { deep: true }))
+        .filter((topping) => topping.orderItemId === item.id),
+    }));
+
+    const completeOrders = dbOrders.map((order) => {
+      const orderItems = itemsWithToppings.filter(
+        (item) => item.orderId === order.id,
+      );
+
+      return {
+        ...OrderSchema.parse(camelcaseKeys(order, { deep: true })),
+        items: orderItems,
+      };
+    });
+
+    return completeOrders.map((order) => PopulatedOrderSchema.parse(order));
+  };
+
+  getOrderWithPopulatedInfo = async (
+    id: string,
+    trx?: Knex | Knex.Transaction,
+  ): Promise<PopulatedOrder | null> => {
+    const connection = this.conn(trx);
+    const dbOrder = await connection("orders").where({ id }).first();
+    if (!dbOrder) return null;
+
+    const dbItems = await connection("order_items")
+      .leftJoin(
+        "drink_variants",
+        "order_items.drink_variant_id",
+        "drink_variants.id",
+      )
+      .where({ order_id: id })
+      .select(
+        "order_items.*",
+        connection.raw(`
+          json_build_object(
+            'id', drink_variants.id,
+            'drink_id', drink_variants.drink_id,
+            'name', drink_variants.name,
+            'price', drink_variants.price,
+            'volume_ml', drink_variants.volume_ml
+          ) as drink_variant
+        `),
+      )
+      .groupBy("order_items.id", "drink_variants.id");
+
+    const itemIds = dbItems.map((item) => item.id);
+    const dbToppings =
+      itemIds.length > 0
+        ? await connection("order_item_toppings")
+            .leftJoin(
+              "toppings",
+              "order_item_toppings.topping_id",
+              "toppings.id",
+            )
+            .whereIn("order_item_toppings.order_item_id", itemIds)
+            .select(
+              "order_item_toppings.*",
+              connection.raw(`
+                json_build_object(
+                  'id', toppings.id,
+                  'name', toppings.name,
+                  'unit_price', toppings.unit_price
+                ) as topping
+              `),
+            )
+            .groupBy(
+              "order_item_toppings.order_item_id",
+              "order_item_toppings.topping_id",
+              "toppings.id",
+            )
+        : [];
+
+    const itemsWithToppings = dbItems.map((item) => ({
+      ...camelcaseKeys(item, { deep: true }),
+      orderId: item.order_id,
+      toppings: dbToppings
+        .map((topping) => camelcaseKeys(topping, { deep: true }))
+        .filter((topping) => topping.orderItemId === item.id),
+    }));
+
+    const completeOrder = {
+      ...OrderSchema.parse(camelcaseKeys(dbOrder, { deep: true })),
+      items: itemsWithToppings,
     };
 
-    return trx ? performQuery(trx) : this.knex.transaction(performQuery);
+    return PopulatedOrderSchema.parse(completeOrder);
   };
 
   getAllOrders = async (trx?: Knex | Knex.Transaction): Promise<Order[]> => {
@@ -144,7 +288,10 @@ class OrderRepository {
     );
   };
 
-  getOrderById = async (id: string, trx?: Knex | Knex.Transaction): Promise<Order | null> => {
+  getOrderById = async (
+    id: string,
+    trx?: Knex | Knex.Transaction,
+  ): Promise<Order | null> => {
     const order = await this.conn(trx)("orders").where({ id }).first();
     if (!order) return null;
     return OrderSchema.parse(camelcaseKeys(order, { deep: true }));
@@ -153,7 +300,7 @@ class OrderRepository {
   updateOrderStatus = async (
     id: string,
     status: OrderStatus,
-    trx?: Knex | Knex.Transaction
+    trx?: Knex | Knex.Transaction,
   ): Promise<Order | null> => {
     const [updatedOrder] = await this.conn(trx)("orders")
       .where({ id })
@@ -165,7 +312,7 @@ class OrderRepository {
 
   createOrder = async (
     order: CreateCompleteOrderDTO,
-    trx?: Knex | Knex.Transaction
+    trx?: Knex | Knex.Transaction,
   ): Promise<CompleteOrder> => {
     const performInsert = async (connection: Knex | Knex.Transaction) => {
       const { items, ...orderData } = order;

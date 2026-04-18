@@ -1,37 +1,9 @@
 import { useState, useEffect } from 'react';
-// LƯU Ý 1: Đường dẫn import này có thể cần chỉnh lại số lượng dấu "../" cho đúng với cấu trúc thư mục của bạn
-import { httpClient } from '../../../../utils/httpClient';
-
-// Dựa theo OrderStatusSchema từ Backend
-type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
-
-interface OrderItem {
-    id: string;
-    drinkName?: string;
-    variantName?: string;
-    name?: string; // API của Tú có thể trả về tên món hoặc chỉ trả về drinkVariantId
-    quantity: number;
-    sugarLevel: string;
-    iceLevel: string;
-    toppings?: OrderItemTopping[];
-}
-
-interface Order {
-    id: string;
-    status: OrderStatus;
-    orderDate: string;
-    items: OrderItem[];
-}
-
-interface OrderItemTopping {
-    orderItemId: string;
-    toppingId: string;
-    quantity: number;
-    toppingName?: string; // Tên topping lấy từ database
-}
+import { httpClient } from '@/utils/httpClient';
+import type { PopulatedOrder, OrderStatus } from '@api-types/sales/orders/order.model';
 
 export default function BaristaBoard() {
-    const [orders, setOrders] = useState<Order[]>([]);
+    const [orders, setOrders] = useState<PopulatedOrder[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     // GỌI API LẤY DANH SÁCH ĐƠN HÀNG KHI MỞ TRANG
@@ -42,8 +14,11 @@ export default function BaristaBoard() {
     const fetchOrders = async () => {
         try {
             setIsLoading(true);
-            const response = await httpClient.get<any>('/api/orders');
-            const ordersArray = response?.orders || response?.data?.orders || response?.data?.data?.orders || [];
+            // Fetch populated orders to get variant and topping info
+            const response = await httpClient.get<any>('/api/orders/populated');
+            
+            // Handle the nested response structure from the controller: { success: true, data: { orders } }
+            const ordersArray = response?.data?.orders || response?.data?.data?.orders || response?.orders || [];
 
             if (Array.isArray(ordersArray)) {
                 setOrders(ordersArray);
@@ -70,12 +45,11 @@ export default function BaristaBoard() {
         }
     };
 
-
     const getOrdersByStatus = (status: OrderStatus) => {
         return orders.filter(order => order.status === status);
     };
 
-    const OrderCard = ({ order }: { order: Order }) => (
+    const OrderCard = ({ order }: { order: PopulatedOrder }) => (
         <div className="bg-white p-4 rounded-lg shadow mb-4 border border-gray-200 transition-all hover:shadow-md">
             <div className="flex justify-between items-center mb-2 border-b pb-2">
                 <span className="font-bold text-lg text-blue-600">#{order.id.split('-')[0]}</span>
@@ -85,15 +59,17 @@ export default function BaristaBoard() {
             </div>
             <div className="space-y-2 mb-4">
                 {order.items?.map(item => (
-                    <div key={item.id} className="text-sm">
-                        <span className="font-semibold">{item.quantity}x {item.drinkName || 'Món uống'} ({item.variantName || "Size"})</span>
-                        <div className="text-gray-500 text-xs ml-4">
+                    <div key={item.id} className="text-sm border-b border-gray-100 last:border-0 pb-2 last:pb-0">
+                        <div className="font-semibold text-gray-800">
+                            {item.quantity}x {item.drinkVariant?.name || 'Món uống'}
+                        </div>
+                        <div className="text-gray-500 text-xs ml-4 mt-1">
                             Đường: {item.sugarLevel} | Đá: {item.iceLevel}
                         </div>
 
                         {item.toppings && item.toppings.length > 0 && (
-                            <div className="text-blue-600 text-xs ml-4 font-medium">
-                                + Topping: {item.toppings.map(t => `${t.quantity}x ${t.toppingName}`).join(", ")}
+                            <div className="text-blue-600 text-xs ml-4 mt-1 font-medium">
+                                + Topping: {item.toppings.map(t => `${t.quantity}x ${t.topping?.name}`).join(", ")}
                             </div>
                         )}
                     </div>

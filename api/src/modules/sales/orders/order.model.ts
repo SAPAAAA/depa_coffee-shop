@@ -1,3 +1,5 @@
+import { ToppingSchema } from "@/modules/catalog/toppings/topping.model";
+import { DrinkVariantSchema } from "@/modules/catalog/variants/variant.model";
 import { z } from "zod";
 
 export const OrderStatusSchema = z.enum([
@@ -31,7 +33,6 @@ export const OrderItemToppingSchema = z.object({
   orderItemId: z.uuidv7(),
   toppingId: z.uuidv7(),
   quantity: z.number().int().positive().default(1),
-  toppingName: z.string().optional(),
 });
 
 export const CreateOrderItemToppingSchema = OrderItemToppingSchema;
@@ -48,9 +49,6 @@ export const OrderItemSchema = z.object({
   sugarLevel: SugarLevelSchema.default("100%"),
   iceLevel: IceLevelSchema.default("normal_ice"),
   calculatedPrice: z.coerce.number().nonnegative(),
-  drinkName: z.string().optional(),
-  variantName: z.string().optional(),
-  toppings: z.array(OrderItemToppingSchema).default([]),
 });
 
 export const CompleteOrderItemSchema = OrderItemSchema.extend({
@@ -100,3 +98,25 @@ export type Order = z.infer<typeof OrderSchema>;
 export type CompleteOrder = z.infer<typeof CompleteOrderSchema>;
 export type CreateOrderDTO = z.input<typeof CreateOrderSchema>;
 export type CreateCompleteOrderDTO = z.input<typeof CreateCompleteOrderSchema>;
+
+// --- POPULATED TYPES ---
+export const PopulatedOrderItemToppingSchema = OrderItemToppingSchema.omit({
+  toppingId: true,
+}).extend({
+  topping: ToppingSchema.omit({ stockQuantity: true }),
+});
+
+export const PopulatedOrderItemSchema = OrderItemSchema.omit({
+  drinkVariantId: true,
+}).extend({
+  drinkVariant: DrinkVariantSchema.omit({ stockQuantity: true, isDefault: true }),
+  toppings: z.array(PopulatedOrderItemToppingSchema).default([]),
+});
+
+export const PopulatedOrderSchema = OrderSchema.extend({
+  items: z.array(PopulatedOrderItemSchema).default([]),
+});
+
+export type PopulatedOrderItemTopping = z.infer<typeof PopulatedOrderItemToppingSchema>;
+export type PopulatedOrderItem = z.infer<typeof PopulatedOrderItemSchema>;
+export type PopulatedOrder = z.infer<typeof PopulatedOrderSchema>;

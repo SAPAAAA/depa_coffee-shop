@@ -167,7 +167,7 @@ class OrderService {
       throw new NotFoundError("Failed to get order info", "OBJECT_NOT_FOUND");
     }
     return order;
-  }
+  };
 
   getOrdersCompleteInfo = async (queryParams: {
     status?: OrderStatus;
@@ -175,6 +175,26 @@ class OrderService {
   }) => {
     const order =
       await this.orderRepository.getOrdersWithCompleteInfo(queryParams);
+    if (!order) {
+      throw new NotFoundError("Failed to get order info", "OBJECT_NOT_FOUND");
+    }
+    return order;
+  };
+
+  getOrderWithPopulatedInfo = async (id: string) => {
+    const order = await this.orderRepository.getOrderWithPopulatedInfo(id);
+    if (!order) {
+      throw new NotFoundError("Failed to get order info", "OBJECT_NOT_FOUND");
+    }
+    return order;
+  };
+
+  getOrdersWithPopulatedInfo = async (queryParams: {
+    status?: OrderStatus;
+    customerId?: string;
+  }) => {
+    const order =
+      await this.orderRepository.getOrdersWithPopulatedInfo(queryParams);
     if (!order) {
       throw new NotFoundError("Failed to get order info", "OBJECT_NOT_FOUND");
     }

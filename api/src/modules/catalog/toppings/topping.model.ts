@@ -1,11 +1,11 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const ToppingSchema = z.object({
   id: z.uuidv7(),
   name: z.string().min(1).max(255),
-    imageUrl: z.union([z.string(), z.url()]).nullish().default(null),
+  imageUrl: z.union([z.string(), z.url()]).nullish().default(null),
   unitPrice: z.coerce.number(),
-  stockQuantity: z.number(),
+  stockQuantity: z.number().positive().int(),
 });
 
 export const CreateToppingSchema = ToppingSchema.omit({ id: true });

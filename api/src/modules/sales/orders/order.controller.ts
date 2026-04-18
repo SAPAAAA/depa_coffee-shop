@@ -11,7 +11,6 @@ import {
   UnauthorizedError,
 } from "@/modules/shared/utils/errors";
 import orderService from "./order.service";
-import db from "@/core/db/knex";
 
 class OrderController {
   private readonly orderService: OrderService;
@@ -51,34 +50,7 @@ class OrderController {
 
     const orders = await this.orderService.getOrdersCompleteInfo(queryParams);
 
-    // BỔ SUNG AN TOÀN TRÁNH LỖI 500
-    const populatedOrders = await Promise.all(
-      (orders || []).map(async (order: any) => {
-        const populatedItems = await Promise.all(
-          (order.items || []).map(async (item: any) => {
-            try {
-              const variantId = item.drinkVariantId || item.drink_variant_id;
-              if (!variantId) return { ...item, name: "Món uống (Chưa rõ)" };
-
-              const variant = await db("drink_variants").where({ id: variantId }).first();
-              const drinkId = variant?.drinkId || variant?.drinkId;
-
-              const drink = drinkId ? await db("drinks").where({ id: drinkId }).first() : null;
-
-              return {
-                ...item,
-                name: drink && variant ? `${drink.name} (${variant.name})` : "Món uống (Chưa rõ)",
-              };
-            } catch (err) {
-              return { ...item, name: "Món uống (Lỗi DB)" };
-            }
-          })
-        );
-        return { ...order, items: populatedItems };
-      })
-    );
-
-    return res.status(200).json({ success: true, data: { orders: populatedOrders } });
+    return res.status(200).json({ success: true, data: { orders } });
   };
 
   getOrderCompleteInfo = async (req: Request, res: Response) => {
@@ -92,6 +64,63 @@ class OrderController {
     }
 
     const order = await this.orderService.getOrderCompleteInfo(id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    // Ensure customers can only access their own orders
+    if (req.user.role === "customer" && order.customerId !== req.user.id) {
+      return res.status(403).json({ success: false, message: "Forbidden" });
+    }
+
+    return res.status(200).json({ success: true, data: { order } });
+  };
+
+  getOrdersPopulatedInfo = async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User is not authenticated", "NO_USER");
+    }
+
+    const { status, customerId } = req.query;
+
+    const queryParams: {
+      status?: OrderStatus;
+      customerId?: string;
+    } = {};
+
+    if (status) {
+      const safeStatus = OrderStatusSchema.safeParse(status);
+      if (!safeStatus.success) {
+        throw new BadRequestError("Failed to get orders", "VALIDATION_ERROR");
+      }
+      queryParams.status = safeStatus.data;
+    }
+
+    if (req.user.role === "customer") {
+      queryParams.customerId = req.user.id;
+    } else if (customerId) {
+      if (typeof customerId !== "string") {
+        throw new BadRequestError("Failed to get orders", "VALIDATION_ERROR");
+      }
+      queryParams.customerId = customerId;
+    }
+
+    const orders = await this.orderService.getOrdersWithPopulatedInfo(queryParams);
+
+    return res.status(200).json({ success: true, data: { orders } });
+  };
+
+  getOrderPopulatedInfo = async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new UnauthorizedError("User is not authenticated", "NO_USER");
+    }
+
+    const { id } = req.params;
+    if (!id || Array.isArray(id)) {
+      throw new BadRequestError("Failed to get order", "INVALID_ID");
+    }
+
+    const order = await this.orderService.getOrderWithPopulatedInfo(id);
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
