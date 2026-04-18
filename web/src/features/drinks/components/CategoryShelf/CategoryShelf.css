@@ -14,7 +14,7 @@
   }
 
   .carousel-ctrl-overlay {
-    @apply absolute top-0 left-0 w-32 h-full flex items-center justify-between pointer-events-none;
+    @apply absolute top-0 left-0 w-10 sm:w-16 md:w-32 h-full flex items-center justify-between pointer-events-none;
   }
 
   .carousel-ctrl-overlay.carousel-ctrl-overlay-left {
@@ -54,7 +54,7 @@
   }
 
   .carousel-list {
-    @apply w-full flex-1 mx-16 overflow-x-hidden;
+    @apply w-full flex-1 mx-12 md:mx-16 overflow-x-hidden;
   }
 
   .carousel-track {

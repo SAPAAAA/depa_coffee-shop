@@ -1,9 +1,6 @@
 @import '@/global.css';
 
 @layer components {
-  /* Note: .login-form-container already existed as a class but didn't have styles, 
-     you can add container-specific styles here if needed */
-  
   .login-form {
     @apply space-y-4;
   }

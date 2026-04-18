@@ -14,7 +14,7 @@
   }
 
   .nav-link {
-    @apply h-full flex items-center gap-2 px-3 text-body font-body text-default-font transition-colors duration-300;
+    @apply h-full flex items-center gap-1 px-2 text-sm md:text-body md:px-3 font-body text-default-font transition-colors duration-300;
   }
 
   .nav-link:hover {
@@ -33,10 +33,8 @@
     @apply h-full w-full px-3 bg-transparent text-default-font transition-colors duration-300 cursor-pointer;
   }
 
-  /* --- New User/Login Styles --- */
-  
   .nav-user {
-    @apply relative h-full flex items-center px-4 border-l border-neutral-200 ml-2;
+    @apply relative h-full hidden md:flex items-center px-4 border-l border-neutral-200 ml-2;
   }
 
   .login-link {

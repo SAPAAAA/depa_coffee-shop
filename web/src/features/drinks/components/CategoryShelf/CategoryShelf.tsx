@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import "./CategoryShelf.css";
 import type { MenuDrink } from "@api-types/catalog/drinks/drink.model";
 
@@ -13,12 +13,30 @@ interface CategoryShelfProps {
 }
 
 const CategoryShelf = ({
-  maxVisibleItems = 5,
+  maxVisibleItems: defaultMaxVisible = 5,
   categoryHeader,
   items,
   onDrinkClick,
 }: Readonly<CategoryShelfProps>) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [maxVisibleItems, setMaxVisibleItems] = useState(defaultMaxVisible);
+
+  // Dynamically update visible items based on screen width
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setMaxVisibleItems(2);
+      } else if (window.innerWidth < 1024) {
+        setMaxVisibleItems(3);
+      } else {
+        setMaxVisibleItems(defaultMaxVisible);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [defaultMaxVisible]);
 
   const isAllInView = items.length <= maxVisibleItems;
   const isAtStart = currentIndex === 0;
@@ -39,9 +57,7 @@ const CategoryShelf = ({
             } as CSSProperties
           }
         >
-          <div
-            className="carousel-track"
-          >
+          <div className="carousel-track">
             {items.map((item) => (
               <button
                 key={item.id}
