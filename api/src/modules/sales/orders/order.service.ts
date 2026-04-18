@@ -155,6 +155,8 @@ class OrderService {
         .addItems(builtOrderItems)
         .return();
 
+      this.orderBuilder.reset();
+
       await this.cartRepository.deleteCart(customerCart.id, trx);
 
       return await this.orderRepository.createOrder(completeOrder, trx);
